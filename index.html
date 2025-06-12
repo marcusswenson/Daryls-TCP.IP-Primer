@@ -7,7 +7,10 @@
 		table, tr, td, th {
 			border: 2px solid black;
 			border-collapse: collapse;
-			padding: 5px;
+			padding: 8px;
+		}
+		div {
+			border-radius: 10px;
 		}
 	</style>
 </head>
@@ -289,19 +292,19 @@
 		<li>The bits in the subnet portion cannot be all ones. This requires a bit of binary arithmetic to determine which subnets would be invalid</li>
 	</ul>
 	<h3>Valid Configuration:</h3>
-	<img src="router1.gif">
+	<img src="/assets/img/router1.gif">
 	<h3>Invalid Configurations:</h3>
-	<img src="router2.gif">
+	<img src="/assets/img/router2.gif">
 	<br>
 	...This is invalid since the [exact] same subnet exists on both sides of the router.
 	<br>
 	<br>
-	<img src="router3.gif">
+	<img src="/assets/img/router3.gif">
 	<br>
 	...This is invalid since the same subnet exists on both sides of the router. Watch that subnet mask! (See below.)
 	<br>
 	<br>
-	<img src="router4.gif">
+	<img src="/assets/img/router4.gif">
 	<br>
 	...This is invalid because a the same host address could be "valid" on either subnet, e.g. 192.168.2.100. Even though the right side subnet is valid by itself, it is actually a small piece of the left side network.
 	<p>
@@ -803,13 +806,13 @@
 		I'm not going to go into a ton of detail here. Instead, I'm going to offer a single example of a network split into two halves.
 		Before: Network 192.168.1.0:
 	</p>
-	<img src="routing1.gif">
+	<img src="/assets/img/routing1.gif">
 	<br>
 	<br>
 	After: Split into three parts using a subnet mask of 255.255.255.192
 	<br>
 	<br>
-	<img src="routing2.gif" <br>
+	<img src="/assets/img/routing2.gif" <br>
 	<p>
 		What we need to do now is tell the router what happened...
 	</p>
@@ -846,11 +849,11 @@
 		<li style="padding-bottom: 10px;">
 			Ping the address of your name server. Your name server address is given to you by your ISP. If you cannot ping your name server, try to trace your route to it. The UNIX version of the command is "traceroute"; Windows renamed it to "tracert". (In related news, Jason D. has informed me that the traceroute command for OS/2 is "tracerte".) An example:
 			<br><br>
-			<table border="1" class="ng-scope">
+			<table border="1" style="background-color: lightgray;">
 				<tbody>
 					<tr>
 						<td>
-							<pre>
+							<pre style="background-color: lightgray; padding: 10px;">
 D:\WINDOWS&gt;tracert ns.orbis.net
 
 Tracing route to ns.orbis.net [205.164.72.2]
@@ -881,7 +884,7 @@ D:\WINDOWS&gt;
 	<p>
 		*Second most useful? Probably the most useful tool for diagnosing connection problems across the Internet is traceroute (or tracert for Windows users.) My absolute favorite utility, and the first program I run when I'm having a problem, is Ping Plotter, which is a GUI traceroute tool that shows graphically the time to each hop along the way to a destination:
 	</p>
-	<img src="pingplotexample.gif">
+	<img src="/assets/img/pingplotexample.gif">
 	<p>
 		Ping Plotter is available at <a href="http://www.pingplotter.com/">http://www.pingplotter.com/</a>. Both "freeware" and registered ($15) versions are available. And if you end up using it more than once or twice a week, do the Right Thing and register it. It's a more than reasonable price, and maybe then Pete will release enhanced versions on a more regular basis :-)
 	</p>
@@ -1041,7 +1044,7 @@ D:\WINDOWS&gt;
 	<p>
 		For every outbound TCP connection, the NAT router intercepts and creates its own TCP connection to the destination host. The NAT router builds a growing list of port translations. Consider two computers that open three TCP connections each to a web server to download the same Web page. At the same time, a Linux workstation opens a Telnet session to rs.internic.net:
 	</p>
-	<img src="nat.gif">
+	<img src="/assets/img/nat.gif">
 	<p>
 		The web server thinks the NAT router at 208.208.208.208 has two browsers running that both just opened the same document and images; the Telnet server thinks that the same computer at 208.208.208.208 opened a Telnet session to it; only the NAT software knows that three computers have seven connections open from behind it.
 	</p>
@@ -1054,7 +1057,7 @@ D:\WINDOWS&gt;
 	<p>
 		If your NAT router only supports one "real" IP address, you can only have one service on your network listening on the "well known port" for that service; you could have two Web servers listening on different ports, but not two web servers both listening on (e.g.) 208.208.208.208:80. For example, you have a LAN configured as follows:
 	</p>
-	<img src="nat2.gif">
+	<img src="/assets/img/nat2.gif">
 	<p>You would configure the NAT software to listen to ports 25 and 80 on 208.208.208.208, and forward connections as follows:</p>
 	<table>
 		<tbody>
@@ -1114,52 +1117,52 @@ D:\WINDOWS&gt;
 	<p>
 		<strong>SOA</strong>: A Start of Authority record is used at the top of every zone file to indicate the zone that the file is authoritative for. The SOA record also contains administrative contact information, the serial number for the file (which must be incremented whenever the file is updated), and various default timeout and retry values for the domain.
 	</p>
-	<div style="background-color: lightgray; padding: 5px;">
+	<div style="background-color: lightgray; padding: 15px;">
 		<pre>reallyslow.net.		IN SOA	turtle.reallyslow.net root.reallyslow.net (<em>[various numbers]</em>)</pre>
 	</div>
 	<p>
 		<strong>A</strong>: Address records actually provide name-to-address mapping:
 	</p>
-	<div style="background-color: lightgray; padding: 5px;">
+	<div style="background-color: lightgray; padding: 15px;">
 		<pre>turtle.reallyslow.net. 		IN A 	192.168.45.10
 caterpillar.reallyslow.net. 	IN A 	192.168.45.12</pre>
 	</div>
 	<p>
 		<strong>CNAME</strong>: Canonical name records are "alias" records that are often used to map conventional names like "www.reallyslow.net" to the actual name ("A" record) of the computer providing World Wide Web services for the domain. Other names use by convention include "ftp." for ftp services, "mail." for e-mail servers, and "ns" for name servers.
 	</p>
-	<div style="background-color: lightgray; padding: 5px;">
+	<div style="background-color: lightgray; padding: 15px;">
 		<pre>www.reallyslow.net.          IN CNAME   turtle.reallyslow.net.
 snail.reallyslow.net.        IN CNAME   caterpillar.reallyslow.net.</pre>
 	</div>
 	<p>
 		<strong>NS</strong>: Name Server records indicate which machines are used as name servers. NS records sometimes point to host names ("A" records), sometimes point to aliases ("CNAME" records), and sometimes just list an IP address.
 	</p>
-	<div style="background-color: lightgray; padding: 5px;">
+	<div style="background-color: lightgray; padding: 15px;">
 		<pre>reallyslow.net.	              IN NS      turtle.reallyslow.net.
 reallyslow.net.	              IN NS      snail.reallyslow.net.</pre>
 	</div>
 	<p>
 		<strong>MX</strong>: Mail eXchanger records indicate which machines are mail servers for a domain and what their preference is. The lower the number, the higher the preference (hey, I didn't invent it.) Other mail servers will try to send mail to the highest preference mail server first. We want email for anyone@reallyslow.net to be delivered to the machine mail.reallyslow.net:
 	</p>
-	<div style="background-color: lightgray; padding: 5px;">
+	<div style="background-color: lightgray; padding: 15px;">
 		<pre>reallyslow.net               IN MX 10   mail.reallyslow.net.</pre>
 	</div>
 	<p>or, if you used another company to handle your email services...</p>
-	<div style="background-color: lightgray; padding: 5px;">
+	<div style="background-color: lightgray; padding: 15px;">
 		<pre>reallyslow.net               IN MX 10   mail.notquitesoslow.net.</pre>
 	</div>
 	<p>MX records should not point to CNAME records.</p>
 	<p>
 		<strong>PTR</strong>: Reverse lookup pointers are used by the reverse lookup system to map addresses to names (notice the reversed order of the octets:)
 	</p>
-	<div style="background-color: lightgray; padding: 5px;">
+	<div style="background-color: lightgray; padding: 15px;">
 		<pre>10.45.168.192.in-addr.arpa.  IN PTR     turtle.reallyslow.net.
 12.45.168.192.in-addr.arpa.  IN PTR     caterpillar.reallyslow.net.</pre>
 	</div>
 	<p>
 		Note that host names never include "@" symbols. An "@" symbol almost always indicates an email address [one notable exception being a message identifier for a Usenet newsgroup posting. Tks again B.B.] The name to the right of the "@" sign is queried for an MX record and mail is delivered to the machine indicated by the MX record(s). In a DNS file, the "@" symbol is a placeholder used to represent "the current domain" as it was named in named.boot. named.boot is the standard file name used by DNS ("named", pronounced "name dee") servers. A basic named.boot looks like this:
 	</p>
-	<div style="background-color: lightgray; padding: 5px;">
+	<div style="background-color: lightgray; padding: 15px;">
 		<pre>primary reallyslow.net db.reallyslow.net
 primary 0.0.127.IN-ADDR.ARPA db.127.0.0
 primary 45.168.192.in-addr.arpa  db.inaddr</pre>
