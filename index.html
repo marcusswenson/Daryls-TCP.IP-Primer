@@ -2,6 +2,14 @@
 
 <head>
 	<title>Daryl's TCP/IP Primer - Addressing and Subnetting on the Near Side of the 'Net</title>
+	
+	<style type="text/css">
+		table, tr, td, th {
+			border: 2px solid black;
+			border-collapse: collapse;
+			padding: 5px;
+		}
+	</style>
 </head>
 
 <body>
@@ -34,7 +42,7 @@
 	<p>
 		UTP and Fiber are "point to point" connections, which require a networking device (hub, switch, or router) to connect more than two devices onto the same network. Wifi requires an access point to brige to a wired network if Internet access is desired, though temporary "ad-hoc" peer-to-peer networks can be created if Internet access isn't needed.
 	</p>
-	<table border="1">
+	<table>
 		<tbody>
 			<tr>
 				<th colspan="4">
@@ -127,7 +135,7 @@
 	<p>
 		The OSI Networking Model is used as a reference point to describe how the various "layers" of networking interoperate. For this discussion, I will describe the bottom three layers:
 	</p>
-	<table border="1">
+	<table>
 		<tbody>
 			<tr>
 				<td>Layer</td>
@@ -214,17 +222,17 @@
 
 	<h3>Addressing and Subnetting</h3>
 	<p>
-		There are two sets of rules for subnetting TCP/IP networks. The original set of rules can be found in RFC 950, and the new set of rules can be found in RFC 1812.
+		There are two sets of rules for subnetting TCP/IP networks. The original set of rules can be found in <a href="https://www.rfc-editor.org/rfc/rfc950.txt">RFC 950</a>, and the new set of rules can be found in <a href="https://www.rfc-editor.org/rfc/rfc1812.txt">RFC 1812</a>.
 	</p>
 	<p>
 		&lt;RANT&gt;
 	</p>
 	<p>
-		Although RFC 1812 came out in June of 1995(!), some certification tests still test you on the RFC 950 rules, for (in my opinion) one of the following reasons:
+		Although <a href="https://www.rfc-editor.org/rfc/rfc1812.txt">RFC 1812</a> came out in June of 1995(!), some certification tests still test you on the <a href="https://www.rfc-editor.org/rfc/rfc950.txt">RFC 950</a> rules, for (in my opinion) one of the following reasons:
 	</p>
 	<ul>
-		<li>Their software still follows RFC 950 rules (this is rare.)</li>
-		<li>Since RFC 1812 simplifies things significantly, there's not enough material to test on. Test items from RFC 950 are added as "filler".</li>
+		<li>Their software still follows <a href="https://www.rfc-editor.org/rfc/rfc950.txt">RFC 950</a> rules (this is rare.)</li>
+		<li>Since RFC 1812 simplifies things significantly, there's not enough material to test on. Test items from <a href="https://www.rfc-editor.org/rfc/rfc950.txt">RFC 950</a> are added as "filler".</li>
 		<li>They are ignorant of the fact that the material on their tests has been out of date for many years.</li>
 		<li>They are mean-spirited, perniciously forcing you to learn material that will never be relevant to your job.</li>
 	</ul>
@@ -238,11 +246,11 @@
 	<p>
 		&lt;/RANT&gt;
 	</p>
-	<h3>Part A: The World According to RFC 950 (the old way of doing things)</h3>
+	<h3>Part A: The World According to <a href="https://www.rfc-editor.org/rfc/rfc950.txt">RFC 950</a> (the old way of doing things)</h3>
 	<p>
 		An IP Address is broken up into three parts: the network portion, the subnet portion (optional), and the host portion. The size of the network portion is determined by the first byte of the address:
 	</p>
-	<table border="1">
+	<table>
 		<tbody>
 			<tr>
 				<td>First Byte</td>
@@ -318,17 +326,17 @@
 	<p>
 		You can not arbitrarily cut a piece out of one network and place it on another segment; the best you can do with a given subnet (or network) is chop it in halves, or quarters, or eighths, or sixteenths... (note the "powers of two" progression; this is an effect of stealing bit positions from the host address section, and giving those bits positions to the subnet portions. It gets complicated...)
 	</p>
-	<h3>Part B: The World According to RFC 1812 (the "new" way of doing things)</h3>
+	<h3>Part B: The World According to <a href="https://www.rfc-editor.org/rfc/rfc1812.txt">RFC 1812</a> (the "new" way of doing things)</h3>
 	<p>
 		or, By The Way - Forget Everything You Just Learned, It Became Obsolete in 1995
 		<br>
-		Under RFC 1812, things have changed..!
+		Under <a href="https://www.rfc-editor.org/rfc/rfc1812.txt">RFC 1812</a>, things have changed..!
 	</p>
 	<p>
-		Perhaps the most significant change on the near side of the 'net under RFC 1812 is Classless Inter-Domain Routing (CIDR, pronounced "Cider"). Under CIDR, the concept of separate "network" and "subnet" portions is now considered outdated, and is being replaced by a "classless" addressing scheme where addresses can be "subnetted" more freely, without consideration of the "class" of address. With the removal of the subnet portion, and the liberalization of (what is now called) the network prefix, there is no longer a consideration of whether or not the bits within the subnet portion are all ones; in other words, you no longer lose a subnet when you break up what used to be known as a class "C" network. You can also aggregate formerly class "C" networks together using network prefixes fewer than 24 bits long. For example, you could combine the formerly class "C" networks 192.168.2.0 and 192.168.3.0 into a single subnet with 510 usable addresses, by using a network mask of 255.255.254.0. What you're really saying here is that the last bit of the third byte now belongs to the "host number" portion of the address, and the "network prefix" is 23 bits (two bytes and seven bits) long. Therefore, the two networks being combined must be contiguous, and the third byte must be even on the lower numbered network. You could not combine, for example, 192.168.2.0 and 192.168.5.0; not could you combine 192.168.11.0 and 192.168.12.0. You could follow similar rules to combine four contiguous class "C" style networks, but the third byte of the lowest numbered network would have to be a multiple of four. This sort of thing is routinely done (on an increasingly larger scale) as you get closer to the Internet backbones.
+		Perhaps the most significant change on the near side of the 'net under <a href="https://www.rfc-editor.org/rfc/rfc1812.txt">RFC 1812</a> is Classless Inter-Domain Routing (CIDR, pronounced "Cider"). Under CIDR, the concept of separate "network" and "subnet" portions is now considered outdated, and is being replaced by a "classless" addressing scheme where addresses can be "subnetted" more freely, without consideration of the "class" of address. With the removal of the subnet portion, and the liberalization of (what is now called) the network prefix, there is no longer a consideration of whether or not the bits within the subnet portion are all ones; in other words, you no longer lose a subnet when you break up what used to be known as a class "C" network. You can also aggregate formerly class "C" networks together using network prefixes fewer than 24 bits long. For example, you could combine the formerly class "C" networks 192.168.2.0 and 192.168.3.0 into a single subnet with 510 usable addresses, by using a network mask of 255.255.254.0. What you're really saying here is that the last bit of the third byte now belongs to the "host number" portion of the address, and the "network prefix" is 23 bits (two bytes and seven bits) long. Therefore, the two networks being combined must be contiguous, and the third byte must be even on the lower numbered network. You could not combine, for example, 192.168.2.0 and 192.168.5.0; not could you combine 192.168.11.0 and 192.168.12.0. You could follow similar rules to combine four contiguous class "C" style networks, but the third byte of the lowest numbered network would have to be a multiple of four. This sort of thing is routinely done (on an increasingly larger scale) as you get closer to the Internet backbones.
 	</p>
 	<p>
-		Most of the other effects of RFC 1812 and CIDR routing affect areas of the 'net closer to the backbone, and mostly work to reduce the size (or at least the rate of growth) of routing tables in backbone routers.
+		Most of the other effects of <a href="https://www.rfc-editor.org/rfc/rfc1812.txt">RFC 1812</a> and CIDR routing affect areas of the 'net closer to the backbone, and mostly work to reduce the size (or at least the rate of growth) of routing tables in backbone routers.
 	</p>
 	<h3>Part C: Huh? (or, Perhaps you could apply an analogy to all this?)</h3>
 	<p>
@@ -345,7 +353,7 @@
 	<p>
 		Now, think back to first grade math, when the teacher was describing the decimal numbering system. As it happens, it's called "decimal" (the root of the word is from Latin decima, a tenth part or tithe) because it's a numbering system that uses ten numbers: the numbers zero through nine. If you need to represent a number larger than nine, you have to start adding additional digits; then the teacher described the ones place, the tens place, the hundreds place, etc. For example, the number 45678 has a four in the "ten thousands" place, a five in the "thousands" place, a six in the "hundreds" place, a seven in the "tens" place, and a 8 in the "ones" place:
 	</p>
-	<table border="1">
+	<table>
 		<tbody>
 			<tr>
 				<td>Ten Thousands</td>
@@ -614,7 +622,7 @@
 			</tr>
 			<tr>
 				<td>AND</td>
-				<td>true if A <i>AND</i> B are true</td>
+				<td>true if A <em>AND</em> B are true</td>
 				<td>
 					1 AND 1 = 1<br>
 					1 AND 0 = 0<br>
@@ -624,7 +632,7 @@
 			</tr>
 			<tr>
 				<td>OR</td>
-				<td>true if A <i>OR</i> B are true</td>
+				<td>true if A <em>OR</em> B are true</td>
 				<td>
 					1 OR 1 = 1<br>
 					1 OR 0 = 1<br>
@@ -634,7 +642,7 @@
 			</tr>
 			<tr>
 				<td>XOR (eXclusive Or)</td>
-				<td>true if <i>either</i> A <i>or</i> B are true</td>
+				<td>true if <em>either</em> A <em>or</em> B are true</td>
 				<td>
 					1 XOR 1 = 0<br>
 					1 XOR 0 = 1<br>
@@ -663,29 +671,29 @@
 		The primary use of the subnet mask (from our perspective at the Near Side of the 'Net) is for workstations to determine whether or not the server or workstation they're trying to talk to (the "destination IP address") is on the same subnet as itself; if the destination IP address is on your subnet, you'll send the IP packet directly to the other computer via the Ethernet or Token Ring (or whatever) network you're on, without bothering the router... at all! <strong>The first routing decision made on an IP packet is made by the workstation sending it; it decides whether or not to send the packet to a router.</strong> Doing this is a four step process:
 	</p>
 	<ol>
-		<li style="padding-bottom: 10px;"><b>Step 1:</b> Convert the IP Addresses to Binary.<br>
+		<li style="padding-bottom: 10px;"><strong>Step 1:</strong> Convert the IP Addresses to Binary.<br>
 			If necessary, the IP address is converted from the familiar dotted-decimal into a 32-bit
 			binary value. It sucks as much for the computer to do it as it does for humans to do it,
 			but computers generally complain less, and they're good at math :-)
 		</li>
-		<li style="padding-bottom: 10px;"><b>Step 2:</b> Apply Source subnet mask to Source addresses:<br>
-			The <b>network portion</b> of the <b>workstation's IP address</b> is determined by performing
+		<li style="padding-bottom: 10px;"><strong>Step 2:</strong> Apply Source subnet mask to Source addresses:<br>
+			The <strong>network portion</strong> of the <strong>workstation's IP address</strong> is determined by performing
 			a binary AND operation on the workstation's IP address and its subnet mask. This operation "masks
 			off" all of the bits of the "host portion" of the IP address, and leaves the "network portion"
 			behind for comparison with the destination's network portion. Hey, wait a minute? How do we
 			know what the subnet mask of the destination is?
 		</li>
-		<li style="padding-bottom: 10px;"><b>Step 3:</b> Apply <b>Source</b> subnet mask to <b>Destination</b> addresses:<br>
+		<li style="padding-bottom: 10px;"><strong>Step 3:</strong> Apply <strong>Source</strong> subnet mask to <strong>Destination</strong> addresses:<br>
 			As it happens, we don't care what the subnet mask of the destination is. We only care if the
-			destination is on our same network segment! <b>Since every workstation on our network segment
+			destination is on our same network segment! <strong>Since every workstation on our network segment
 				shares the same subnet mask, we can apply our subnet mask to the destination to determine if
-				its network portion matches ours.</b> So, <b>the network portion of the destination
-				workstation's IP address that we can use to see if it matches ours</b> is determined by performing
-			a binary AND operation on the destination IP address and <b>our subnet mask</b>.
+				its network portion matches ours.</strong> So, <strong>the network portion of the destination
+				workstation's IP address that we can use to see if it matches ours</strong> is determined by performing
+			a binary AND operation on the destination IP address and <strong>our subnet mask</strong>.
 		</li>
-		<li><b>Step 4:</b> Compare the derived <b>network</b> portions for equality:<br>
+		<li><strong>Step 4:</strong> Compare the derived <strong>network</strong> portions for equality:<br>
 			At this point, we can compare the network portions we have masked from the source and destination
-			IP addresses to see if they're the same. If they are, then we <b>must be on the same subnet</b>
+			IP addresses to see if they're the same. If they are, then we <strong>must be on the same subnet</strong>
 			so we send the packet directly; if they are different, even by only one bit, the destination is
 			on another network segment...somewhere. We don't know where. Maybe the router does...
 		</li>
@@ -696,9 +704,9 @@
 	<p>
 		Remember the part about combining four "Class C" networks together? Watch your binary arithmetic:
 		<br>
-		(network prefix bits shown in <span style="color: darkgreen; font-weight: bold;">green</span>)
+		(network prefix bits shown in <span style="color: blue; font-weight: bold;">blue</span>)
 	</p>
-	<table border="1">
+	<table>
 		<tbody>
 			<tr>
 				<th>Networks</th>
@@ -706,23 +714,23 @@
 			</tr>
 			<tr>
 				<td>192.168.8.0</td>
-				<td>b<span style="color: darkgreen;">11000000.10101000.000010</span>00.00000000</td>
+				<td>b<span style="color: blue;">11000000.10101000.000010</span>00.00000000</td>
 			</tr>
 			<tr>
 				<td>192.168.9.0</td>
-				<td>b<span style="color: darkgreen;">11000000.10101000.000010</span>01.00000000</td>
+				<td>b<span style="color: blue;">11000000.10101000.000010</span>01.00000000</td>
 			</tr>
 			<tr>
 				<td>192.168.10.0</td>
-				<td>b<span style="color: darkgreen;">11000000.10101000.000010</span>10.00000000</td>
+				<td>b<span style="color: blue;">11000000.10101000.000010</span>10.00000000</td>
 			</tr>
 			<tr>
 				<td>192.168.11.0</td>
-				<td>b<span style="color: darkgreen;">11000000.10101000.000010</span>11.00000000</td>
+				<td>b<span style="color: blue;">11000000.10101000.000010</span>11.00000000</td>
 			</tr>
 			<tr>
 				<td>Mask, 255.255.252.0</td>
-				<td>b<span style="color: darkgreen;">11111111.11111111.111111</span>00.00000000</td>
+				<td>b<span style="color: blue;">11111111.11111111.111111</span>00.00000000</td>
 			</tr>
 		</tbody>
 	</table>
@@ -732,9 +740,9 @@
 	<p>
 		Doing it wrong:
 		<br>
-		(carefully watch the network-portion bit in <span style="color: red;">red</span>)
+		(carefully watch the network-portion bit in <span style="color: red; font-weight: bold;">red</span>)
 	</p>
-	<table border="1">
+	<table>
 		<tbody>
 			<tr>
 				<th>Networks</th>
@@ -742,31 +750,31 @@
 			</tr>
 			<tr>
 				<td>192.168.10.0</td>
-				<td>b<span style="color: darkgreen;">11000000.10101000.00001</span>
-					<span style="color: red;"><b>0</b></span>10.00000000
+				<td>b<span style="color: blue;">11000000.10101000.00001</span>
+					<span style="color: red;"><strong>0</strong></span>10.00000000
 				</td>
 			</tr>
 			<tr>
 				<td>192.168.11.0</td>
-				<td>b<span style="color: darkgreen;">11000000.10101000.00001</span>
-					<span style="color: red;"><b>0</b></span>11.00000000
+				<td>b<span style="color: blue;">11000000.10101000.00001</span>
+					<span style="color: red;"><strong>0</strong></span>11.00000000
 				</td>
 			</tr>
 			<tr>
 				<td>192.168.12.0</td>
-				<td>b<span style="color: darkgreen;">11000000.10101000.00001</span>
-					<span style="color: red;"><b>1</b></span>00.00000000
+				<td>b<span style="color: blue;">11000000.10101000.00001</span>
+					<span style="color: red;"><strong>1</strong></span>00.00000000
 				</td>
 			</tr>
 			<tr>
 				<td>192.168.13.0</td>
-				<td>b<span style="color: darkgreen;">11000000.10101000.00001</span>
-					<span style="color: red;"><b>1</b></span>01.00000000
+				<td>b<span style="color: blue;">11000000.10101000.00001</span>
+					<span style="color: red;"><strong>1</strong></span>01.00000000
 				</td>
 			</tr>
 			<tr>
 				<td>Mask, 255.255.252.0</td>
-				<td>b<span style="color: darkgreen;">11111111.11111111.11111<b>1</b></span>00.00000000</td>
+				<td>b<span style="color: blue;">11111111.11111111.11111<strong>1</strong></span>00.00000000</td>
 			</tr>
 		</tbody>
 	</table>
@@ -893,14 +901,14 @@ D:\WINDOWS&gt;
 	<p>
 		Every TCP (or UDP) communication has a source port and destination port number in the TCP (or UDP) header. <strong>Every TCP/IP communication can be uniquely identified as [Source IP]:[Source Port] &lt;---&gt; [Dest. IP]:[Dest Port]</strong>. This is how a Web browser can load several images at once and keep track of which packet is for which image. The source port is different for each TCP image-download connection, though the destination port is 80 in each case. For example:
 	</p>
-	<table border="1">
+	<table>
 		<tbody>
 			<tr>
-				<td><b>Source IP</b></td>
-				<td><b>Source Port</b></td>
-				<td><b>Dest IP</b></td>
-				<td><b>Dest Port</b></td>
-				<td><b>Notes</b></td>
+				<td><strong>Source IP</strong></td>
+				<td><strong>Source Port</strong></td>
+				<td><strong>Dest IP</strong></td>
+				<td><strong>Dest Port</strong></td>
+				<td><strong>Notes</strong></td>
 			</tr>
 
 			<tr>
@@ -929,14 +937,14 @@ D:\WINDOWS&gt;
 	<p>
 		Note that each file getting downloaded has a different source port number; this is how the communications are differentiated (this packet is part of logo.gif, this packet is part of index.html, etc). Now, let's assume that index.html is finished, but the graphics are loading slowly. While the user is waiting, he/she decides to open a telnet session to rs.internic.net. The table of open sessions would look like this:
 	</p>
-	<table border="1">
+	<table>
 		<tbody>
 			<tr>
-				<td><b>Source IP</b></td>
-				<td><b>Source Port</b></td>
-				<td><b>Dest IP</b></td>
-				<td><b>Dest Port</b></td>
-				<td width="153"><b>Notes</b></td>
+				<td><strong>Source IP</strong></td>
+				<td><strong>Source Port</strong></td>
+				<td><strong>Dest IP</strong></td>
+				<td><strong>Dest Port</strong></td>
+				<td width="153"><strong>Notes</strong></td>
 			</tr>
 			<tr>
 				<td>192.168.1.1</td>
@@ -973,8 +981,8 @@ D:\WINDOWS&gt;
 	<table bordercolor="#808080" border="1" class="ng-scope">
 		<tbody>
 			<tr>
-				<td><b>Service</b></td>
-				<td><b>"Well-Known" Port Number</b></td>
+				<td><strong>Service</strong></td>
+				<td><strong>"Well-Known" Port Number</strong></td>
 			</tr>
 			<tr>
 				<td>FTP</td>
@@ -1012,6 +1020,191 @@ D:\WINDOWS&gt;
 	<p>
 		A complete list of assigned Well-Known Ports can be found at <a href="http://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml">http://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml</a>
 	</p>
+
+	<hr>
+
+	<h3>Network Address Translation</h3>
+	<p>
+		Network Address Translation, or NAT, is accomplished using software that can hide one or more subnets behind a single IP address. NAT functionality is typically found in Internet routers and almost always used in firewalls. NAT is not the same as an HTTP Proxy server. HTTP Proxy servers must be configured on the client side. Once configured, your Web browser asks the HTTP proxy to make connections to the Internet on your behalf; as far as the Web site you're connecting to knows, it's the proxy server that's reading the Web page, not your browser. NAT is an effect of the HTTP proxy in this case; the requests from all of the browsers using the HTTP proxy appear to be coming from the proxy server, not from the workstation. The workstation does not need to be using IP addresses that are routable to the Internet; in fact, it is normal to use addresses that are reserved for this purpose, such as 10.x.x.x (see Tips and Tricks, later in this document.) "Transparent" NAT is easier to implement (since nothing needs to be changed at the workstations). However, "configured" NAT (e.g., HTTP proxy servers) often add additional features, such as Web page caching.
+	</p>
+	<p>
+		NAT software accomplishes three basic things:
+	</p>
+	<ul>
+		<li style="padding-bottom: 10px;">NAT can allow you to connect many more machines to the Internet than you have IP addresses for. I first used NAT to connect my home LAN to a dial-up ISP via a single-IP-address PPP connection. (I used the reserved address block 192.168.1.0/24 on my LAN).</li>
+		<li style="padding-bottom: 10px;">NAT is a good security measure when you use reserved addresses behind the NAT router, since the addresses are not globally routable. It is harder to attack hosts when you can't reach them directly.</li>
+		<li>NAT is a good security measure because <em>no inbound connections are allowed</em> through the NAT translator unless it is specifically configured to allow them; as we will see, this is a side effect of using NAT software.</li>
+	</ul>
+	<p>
+		I like to refer to NAT routers as "transparent TCP proxy routers." Transparent, because unlike HTTP proxies, NAT routers do not need any configuration nor application software support to work with most TCP-based protocols. NAT routers will proxy outbound connections "automagically."
+	</p>
+	<p>
+		For every outbound TCP connection, the NAT router intercepts and creates its own TCP connection to the destination host. The NAT router builds a growing list of port translations. Consider two computers that open three TCP connections each to a web server to download the same Web page. At the same time, a Linux workstation opens a Telnet session to rs.internic.net:
+	</p>
+	<img src="nat.gif">
+	<p>
+		The web server thinks the NAT router at 208.208.208.208 has two browsers running that both just opened the same document and images; the Telnet server thinks that the same computer at 208.208.208.208 opened a Telnet session to it; only the NAT software knows that three computers have seven connections open from behind it.
+	</p>
+	<p>
+		Transparent NAT works well for TCP connections, but due to the connectionless nature of UDP, NAT works less well for unusual UDP connections (sorry, Quake fans..!)
+	</p>
+	<p>
+		Since NAT routers are hiding many machines behind a single IP address, putting server(s) behind a NAT router becomes a problem, since the NAT software has no way of determining for itself what IP address to forward the inbound connection requests to. This dropping of inbound connections, while allowing outbound connections, makes NAT routers into cost-effective low-end firewalls.
+	</p>
+	<p>
+		If your NAT router only supports one "real" IP address, you can only have one service on your network listening on the "well known port" for that service; you could have two Web servers listening on different ports, but not two web servers both listening on (e.g.) 208.208.208.208:80. For example, you have a LAN configured as follows:
+	</p>
+	<img src="nat2.gif">
+	<p>You would configure the NAT software to listen to ports 25 and 80 on 208.208.208.208, and forward connections as follows:</p>
+	<table>
+		<tbody>
+			<tr>
+				<th>"Listening" Port</th>
+				<th>"Internal" Address</th>
+			</tr>
+			<tr>
+				<td>208.208.208.208:25</td>
+				<td>192.168.1.5:25</td>
+			</tr>
+			<tr>
+				<td>208.208.208.208:80</td>
+				<td>192.168.1.9:80</td>
+			</tr>
+		</tbody>
+	</table>
+	<p>
+		If you want to play with NAT software, and you have an old PC-compatible machine lying around (NAT is easy for routers to do and does not require much in the way of hardware), A list of Linux router and firewall distributions, all of which support NAT, can be found at Wikipedia: <a href="http://en.wikipedia.org/wiki/List_of_router_and_firewall_distributions">http://en.wikipedia.org/wiki/List_of_router_and_firewall_distributions</a>
+	</p>
+
+	<hr>
+
+	<h3>The Domain Name System</h3>
+	<p>
+		The Domain Name System, or DNS, is a service that translates computer names into IP addresses. A name-to-address system is necessary because we humans do not easily remember numbers like, "207.68.156.61", but we can easily remember names like, "www.microsoft.com". The DNS is a hierarchical system, with the top of the system called the "root", and represented by a single period ".". There are twelve (very, very busy) "root" servers on the Internet at the time of this writing. Root servers know where the servers are for the "top-level domains" like .com, .net, .edu, .org, .uk, .de, .nz, .us, and so on.
+	</p>
+	<p>
+		Let's start with an example: If you ask your local name server for the address of "www.north-america.example.com" the name server will do the following:
+	</p>
+	<ol>
+		<li style="padding-bottom: 10px;">Check to see if it already knows the address of "www.north-america.example.com" (let's assume it doesn't. The example is more interesting that way.)</li>
+		<li style="padding-bottom: 10px;">The DNS server queries a "root" server for the address of "www.north-america.example.com". All fully-functional DNS servers are configured with a static list of root servers, available at <a href="ftp://ftp.rs.internic.net/domain/named.root">ftp://ftp.rs.internic.net/domain/named.root</a>.</li>
+		<li style="padding-bottom: 10px;">The root server will refer your DNS to a list of ".com" servers.</li>
+		<li style="padding-bottom: 10px;">Your DNS will query one of the ".com" servers for the address of "www.north-america.example.com"</li>
+		<li style="padding-bottom: 10px;">The ".com" name server queried refers your name server to a list of name servers for "example.com".</li>
+		<li style="padding-bottom: 10px;">Your DNS server then asks one of the "example.com" name servers for the address of "www.north-america.example.com".</li>
+		<li style="padding-bottom: 10px;">One of two things can happen here. If the "example.com" name server queried knows the address of "www.north-america.example.com" then it returns that address to your DNS server. If the "north-america" subdomain has been delegated to some other name server(s), then that name server list (of name servers that service the zone, "north-america.example.com") will be returned to your DNS, and your DNS will query one of those servers for the address of "www.north-america.example.com".</li>
+	</ol>
+	<p>
+		Note that your DNS remembers, or caches, all the information it retrieves this way. Therefore, if you asked your local DNS for the address of "ftp.north-america.example.com", then it would directly ask the name server finally referenced in step 7 (above) for the address of "ftp.north-america.example.com". This prevents the top-level and root servers from being more heavily loaded than they already are. (It's also interesting to note that the root servers are also the top-level domain servers for the US domains.) It is possible to set up a caching-only DNS server that processes and caches requests, but isn't directly knowledgeable ("authoritative") about any domains itself.
+	</p>
+	<h4>Domains, Zones, and Authority</h4>
+	<p>
+		There are several different types of name servers. There is one Primary name server for each domain or delegated subdomain ("zone"). A "zone" refers to the domain and subdomain(s) (if any) a server is authoritative for. In many cases "zone" and "domain" mean the same thing, but when you start delegating authority for subdomains, they get their own zone to administer, although it's part of your domain. For example, the root servers are authoritative for the ".com" zone but they aren't authoritative for the entire ".com" domain. "example.com" is, in fact, a subdomain of the ".com" domain, but is a different DNS zone. Zone boundaries typically follow administrative control boundaries: since the people managing the ".com" domain are not the same as the people managing the "example.com" domain, a new zone is created and authority for the zone is delegated to that zone's name servers.
+	</p>
+	<p>
+		Every Primary name server should have at least one Secondary name server. A Secondary name server simply copies the zone information from the zone's Primary server. Secondary name servers also answer DNS requests authoritatively. It is strongly suggested that at least one secondary name server be on another physical network. If someone wants to send you mail, and your mail server is unreachable, the mail is queued and retried, but eventually delivered. If the sending mail server is told there is no mail server or host information about your network (which is what happens if all authoritative DNSes are unreachable) then the mail bounces.
+	</p>
+	<p>
+		If you set up a Primary name server, it is necessary to have the parent domain delegate authority for your zone to you. For example, if you wanted to be the authoritative name server for the domain "reallyslow.net", you would have to ask the administrators for ".net" (InterNIC, in this case) to delegate the zone authority for "reallyslow.net" to you. Similarly, if the engineering department wanted to run there own name server for "engineering.reallyslow.net", then they would have to ask you to delegate the zone "engineering.reallyslow.net" to their name server(s).
+	</p>
+	<p>
+		It is usually possible to look up an address and come up with a machine name. This is called a "reverse lookup," because instead of getting an address from a name, you are getting a name from an address. The reverse lookup system behaves very similarly to "normal" DNS; in fact, you could almost consider it to be a parallel DNS system. Lookup is done in reverse order by octet with the domain "in-addr.arpa" appended. Let's say you "own" a network 192.168.45.0 with a subnet mask of 255.255.255.0. You would contact the administrator for "168.192.in-addr.arpa" and ask him/her to delegate the authority for the zone "45.168.192.in-addr.arpa" to your name server. On your name server you would create a zone file for reverse lookups that would be authoritative for that zone.
+	</p>
+	<h4>Types of DNS Records</h4>
+	<p>
+		<strong>SOA</strong>: A Start of Authority record is used at the top of every zone file to indicate the zone that the file is authoritative for. The SOA record also contains administrative contact information, the serial number for the file (which must be incremented whenever the file is updated), and various default timeout and retry values for the domain.
+	</p>
+	<div style="background-color: lightgray; padding: 5px;">
+		<pre>reallyslow.net.		IN SOA	turtle.reallyslow.net root.reallyslow.net (<em>[various numbers]</em>)</pre>
+	</div>
+	<p>
+		<strong>A</strong>: Address records actually provide name-to-address mapping:
+	</p>
+	<div style="background-color: lightgray; padding: 5px;">
+		<pre>turtle.reallyslow.net. 		IN A 	192.168.45.10
+caterpillar.reallyslow.net. 	IN A 	192.168.45.12</pre>
+	</div>
+	<p>
+		<strong>CNAME</strong>: Canonical name records are "alias" records that are often used to map conventional names like "www.reallyslow.net" to the actual name ("A" record) of the computer providing World Wide Web services for the domain. Other names use by convention include "ftp." for ftp services, "mail." for e-mail servers, and "ns" for name servers.
+	</p>
+	<div style="background-color: lightgray; padding: 5px;">
+		<pre>www.reallyslow.net.          IN CNAME   turtle.reallyslow.net.
+snail.reallyslow.net.        IN CNAME   caterpillar.reallyslow.net.</pre>
+	</div>
+	<p>
+		<strong>NS</strong>: Name Server records indicate which machines are used as name servers. NS records sometimes point to host names ("A" records), sometimes point to aliases ("CNAME" records), and sometimes just list an IP address.
+	</p>
+	<div style="background-color: lightgray; padding: 5px;">
+		<pre>reallyslow.net.	              IN NS      turtle.reallyslow.net.
+reallyslow.net.	              IN NS      snail.reallyslow.net.</pre>
+	</div>
+	<p>
+		<strong>MX</strong>: Mail eXchanger records indicate which machines are mail servers for a domain and what their preference is. The lower the number, the higher the preference (hey, I didn't invent it.) Other mail servers will try to send mail to the highest preference mail server first. We want email for anyone@reallyslow.net to be delivered to the machine mail.reallyslow.net:
+	</p>
+	<div style="background-color: lightgray; padding: 5px;">
+		<pre>reallyslow.net               IN MX 10   mail.reallyslow.net.</pre>
+	</div>
+	<p>or, if you used another company to handle your email services...</p>
+	<div style="background-color: lightgray; padding: 5px;">
+		<pre>reallyslow.net               IN MX 10   mail.notquitesoslow.net.</pre>
+	</div>
+	<p>MX records should not point to CNAME records.</p>
+	<p>
+		<strong>PTR</strong>: Reverse lookup pointers are used by the reverse lookup system to map addresses to names (notice the reversed order of the octets:)
+	</p>
+	<div style="background-color: lightgray; padding: 5px;">
+		<pre>10.45.168.192.in-addr.arpa.  IN PTR     turtle.reallyslow.net.
+12.45.168.192.in-addr.arpa.  IN PTR     caterpillar.reallyslow.net.</pre>
+	</div>
+	<p>
+		Note that host names never include "@" symbols. An "@" symbol almost always indicates an email address [one notable exception being a message identifier for a Usenet newsgroup posting. Tks again B.B.] The name to the right of the "@" sign is queried for an MX record and mail is delivered to the machine indicated by the MX record(s). In a DNS file, the "@" symbol is a placeholder used to represent "the current domain" as it was named in named.boot. named.boot is the standard file name used by DNS ("named", pronounced "name dee") servers. A basic named.boot looks like this:
+	</p>
+	<div style="background-color: lightgray; padding: 5px;">
+		<pre>primary reallyslow.net db.reallyslow.net
+primary 0.0.127.IN-ADDR.ARPA db.127.0.0
+primary 45.168.192.in-addr.arpa  db.inaddr</pre>
+	</div>
+	<p>
+		We're telling BIND that it is authoritative for the "standard" zone "reallyslow.net", and also primary for the reverse lookup zones for the subnets 192.168.45.x and 127.0.0.x. (The only entry for 127.0.0.x is 127.0.0.1, which maps to LOCALHOST, which is a reserved address and name for "this machine". In other words, you will always have a VERY fast ping to localhost :-) The zone file for 45.168.192.in-addr.arpa contains standard PTR records after the SOA record. Note that it's really easy to forget to update named.boot if you add a new domain to your name server (hint, hint.)
+		If you are going to set up your own name server, I highly recommend the book DNS and BIND by Paul Albitz and Cricket Liu (O'Reilly & Associates, ISBN 1-56592-010-4). On the 'net, check out the "BIND Operations Guide" in Windows Write format at <a href="ftp://ftp.software.com/BIND-NT/BOG.wri">ftp://ftp.software.com/BIND-NT/BOG.wri</a>.
+	</p>
+
+	<hr>
+
+	<h3>Tips and Tricks</h3>
+	<p>The part you were waiting for, right?</p>
+	<ul class="ng-scope">
+		<li style="padding-bottom: 10px;">
+			First, if you skipped ahead to this section, go back and read the previous sections. A collection of tips will not replace knowing what the heck you're doing.
+		</li>
+		<li style="padding-bottom: 10px;">
+			If you're not connected to the Internet, and don't already have one or more IP networks assigned to you, use the addresses reserved for this purpose. They are, 10.x.x.x, 172.16.x.x-172.31.x.x, and 192.168.x.x (<em>see</em> <a href="https://www.rfc-editor.org/rfc/rfc1597.txt">RFC 1597</a>)
+		</li>
+		<li style="padding-bottom: 10px;">
+			Create a subnet address policy (e.g., .1-.5 reserved for routers, .1 always the default route, .6-.30 reserved for static IP's such as servers, .50-.254 dynamic through DHCP.)
+		</li>
+		<li style="padding-bottom: 10px;">
+			Use DHCP to assign workstation addresses. When it comes time to reconfigure subnets (after your network has grown a bit), you'll save a lot of time.
+		</li>
+		<li style="padding-bottom: 10px;">
+			Meticulously track static IP assignments. Create a central database or document listing all static IP's and their associated devices.
+		</li>
+		<li style="padding-bottom: 10px;">
+			Label router interfaces with their addresses.
+		</li>
+		<li style="padding-bottom: 10px;">
+			Keep a <strong>current</strong> diagram of your subnets and router connections (include detail on router interface addresses.) If you get into trouble, it'll save you two hours of onsite time if you have to call someone in to help.
+		</li>
+		<li style="padding-bottom: 10px;">
+			If you have IP-enabled servers, use a firewall. If you are using Windows-based file sharing and have no firewall, use a non-IP protocol to do it (IPX or NetBEUI). You will then need to set either IPX or NetBEUI as your default protocol. Or, get a firewall. A number of free Linux distributions can run on pretty much any old PC you have on hand.
+		</li>
+		<li style="padding-bottom: 10px;">
+			If you want to see your network working, packet by packet, check out WireShark, an Open Source packet sniffer: <a href="http://www.wireshark.org/">http://www.wireshark.org/</a>.
+		</li>
+		<li>
+			More to come / <a href="mailto:dbanttari@gmail.com">Your Tip Here</a>.
+		</li>
+	</ul>
 </body>
 
 </html>
