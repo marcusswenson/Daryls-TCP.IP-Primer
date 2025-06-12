@@ -787,9 +787,9 @@
 	<p>
 		Why all this crap about binary arithmetic? Do I have to know this stuff? I'm afraid so; subnet masks are created and used on a bit-by-bit basis; in order to effectively use subnet masks that don't fall on byte boundaries (like 255.255.255.0 does), you have to determine what hosts are on each subnet by using binary arithmetic. It sucks, it's hard, it's confusing (especially since IP addresses and masks are expressed in decimal instead of hexadecimal notation) but you must use and understand IP addresses and subnet masks as binary.
 	</p>
-	
+
 	<hr>
-	
+
 	<h3>Routing</h3>
 	<p>
 		I'm not going to go into a ton of detail here. Instead, I'm going to offer a single example of a network split into two halves.
@@ -801,8 +801,7 @@
 	After: Split into three parts using a subnet mask of 255.255.255.192
 	<br>
 	<br>
-	<img src="routing2.gif"
-	<br>
+	<img src="routing2.gif" <br>
 	<p>
 		What we need to do now is tell the router what happened...
 	</p>
@@ -824,10 +823,195 @@
 	<p>
 		Note that the automatic routing protocol (IP) RIP does not understand subnet masking. If you are using protocols that do, such as OSPF or EIGRP, then you probably aren't reading this document. Actually using routing protocols tends to be irrelevant on the "near side" of the net, since there is generally only one path to the Internet from any given workstation on a LAN. Multiple routes tend to be a problem only closer to the backbone, and that's your ISP's problem.
 	</p>
-	
+
 	<hr>
-	
+
 	<h3>Troubleshooting</h3>
+	<p>
+		The second most useful tool in troubleshooting client IP issues is PING. Ping is a low-level method of determining is a specific host is alive.
+	</p>
+	<ol>
+		<li style="padding-bottom: 10px;">Determine if the IP stack is alive. There is a reserved address 127.0.0.1 called "localhost". A successful ping to 127.0.0.1 means your IP stack is working properly. A ping to localhost doesn't even make it on the wire.</li>
+		<li style="padding-bottom: 10px;">Determine if you can talk onto the wire. Ping yourself. If your address is 192.168.1.1, then ping 192.168.1.1. Actually, the packet may or may not actually make it on the wire, depending on your implementation. But it doesn't hurt.</li>
+		<li style="padding-bottom: 10px;">See if you can ping anyone else. Ping your default router. Make sure your default router is on your same subnet! The easy way to do this is to refer to the "glossy explanation" of subnetting in Section 4, and to make sure both addresses can exist in the same subnet. If you can't ping your default router, either the router is down (easily checked from another workstation) or there's something wrong at your workstation. Make sure your workstation has the subnet mask set correctly, and that you and the router are using the same frame type. The default frame type for TCP/IP is Ethernet_II on Ethernet LANs, and TOKEN-RING_SNAP on Token-Ring LANs. Cisco routers refer to Ethernet_II as encapsulation type ARPA.</li>
+		<li style="padding-bottom: 10px;">See if you ping the far interface of the default router. All routers have more than one interface (or they wouldn't be routers, right?) If you know the interface of the far side of the router, ping that. That verifies that your default route is set properly. If you don't know the address of another router interface, skip to step 5.</li>
+		<li style="padding-bottom: 10px;">
+			Ping the address of your name server. Your name server address is given to you by your ISP. If you cannot ping your name server, try to trace your route to it. The UNIX version of the command is "traceroute"; Windows renamed it to "tracert". (In related news, Jason D. has informed me that the traceroute command for OS/2 is "tracerte".) An example:
+			<br><br>
+			<table border="1" class="ng-scope">
+				<tbody>
+					<tr>
+						<td>
+							<pre>
+D:\WINDOWS&gt;tracert ns.orbis.net
+
+Tracing route to ns.orbis.net [205.164.72.2]
+over a maximum of 30 hops:
+
+1 1 ms 1 ms 1 ms 192.168.1.254
+2 60 ms 61 ms 64 ms 205.164.75.1
+3 64 ms 62 ms 65 ms tamino.summit-ops.orbis.net [205.164.72.129]
+4 78 ms 77 ms 78 ms ns.orbis.net [205.164.72.2]
+
+Trace complete.
+
+D:\WINDOWS&gt;
+								</pre>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<span style="font-size: 0.9em;">Note: if you actually get names, you not only have verified Internet connectivity, but you also know your DNS is properly set up. Congratulations! You are on the Internet. If you have problems at this point, it's time to call your ISP.</span>
+		</li>
+		<li>
+			If you didn't get any names in your route trace, don't panic: Try to ping www.novell.com or www.microsoft.com. If you can ping, by name, either of those addresses, you are set up for Internet access. If you get a message like, "Unable to resolve novell.com" then you need to make sure your DNS is set up properly. If you get a "host unreachable" then you probably are set up OK but the 'net is just a bit congested. (Or you haven't set your workstation's default route properly.)
+		</li>
+	</ol>
+	<p>
+		Typically, I start with step #6, and if that fails, go to step #1.
+	</p>
+	<p>
+		*Second most useful? Probably the most useful tool for diagnosing connection problems across the Internet is traceroute (or tracert for Windows users.) My absolute favorite utility, and the first program I run when I'm having a problem, is Ping Plotter, which is a GUI traceroute tool that shows graphically the time to each hop along the way to a destination:
+	</p>
+	<img src="pingplotexample.gif">
+	<p>
+		Ping Plotter is available at <a href="http://www.pingplotter.com/">http://www.pingplotter.com/</a>. Both "freeware" and registered ($15) versions are available. And if you end up using it more than once or twice a week, do the Right Thing and register it. It's a more than reasonable price, and maybe then Pete will release enhanced versions on a more regular basis :-)
+	</p>
+
+	<hr>
+
+	<h3>TCP and UDP</h3>
+	<p>
+		TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) are layer 4 protocols that help organize process-to-process communication. When a Web browser establishes a connection to download an HTML document from www.mydomain.com, the browser:
+	</p>
+	<ol>
+		<li>Resolves the IP address for www.mydomain.com</li>
+		<li>Opens a TCP connection to port 80 on the web server www.mydomain.com</li>
+		<li>Transfers the data over the TCP connection</li>
+		<li>Closes the TCP connection</li>
+	</ol>
+	<p>
+		Every TCP (or UDP) communication has a source port and destination port number in the TCP (or UDP) header. <strong>Every TCP/IP communication can be uniquely identified as [Source IP]:[Source Port] &lt;---&gt; [Dest. IP]:[Dest Port]</strong>. This is how a Web browser can load several images at once and keep track of which packet is for which image. The source port is different for each TCP image-download connection, though the destination port is 80 in each case. For example:
+	</p>
+	<table border="1">
+		<tbody>
+			<tr>
+				<td><b>Source IP</b></td>
+				<td><b>Source Port</b></td>
+				<td><b>Dest IP</b></td>
+				<td><b>Dest Port</b></td>
+				<td><b>Notes</b></td>
+			</tr>
+
+			<tr>
+				<td>192.168.1.1</td>
+				<td>1025</td>
+				<td>10.101.10.1</td>
+				<td>80</td>
+				<td>index.html</td>
+			</tr>
+			<tr>
+				<td>192.168.1.1</td>
+				<td>1026</td>
+				<td>10.101.10.1</td>
+				<td>80</td>
+				<td>logo.gif</td>
+			</tr>
+			<tr>
+				<td>192.168.1.1</td>
+				<td>1027</td>
+				<td>10.101.10.1</td>
+				<td>80</td>
+				<td>backgrnd.gif</td>
+			</tr>
+		</tbody>
+	</table>
+	<p>
+		Note that each file getting downloaded has a different source port number; this is how the communications are differentiated (this packet is part of logo.gif, this packet is part of index.html, etc). Now, let's assume that index.html is finished, but the graphics are loading slowly. While the user is waiting, he/she decides to open a telnet session to rs.internic.net. The table of open sessions would look like this:
+	</p>
+	<table border="1">
+		<tbody>
+			<tr>
+				<td><b>Source IP</b></td>
+				<td><b>Source Port</b></td>
+				<td><b>Dest IP</b></td>
+				<td><b>Dest Port</b></td>
+				<td width="153"><b>Notes</b></td>
+			</tr>
+			<tr>
+				<td>192.168.1.1</td>
+				<td>1026</td>
+				<td>10.101.10.1</td>
+				<td>80</td>
+				<td>logo.gif</td>
+			</tr>
+			<tr>
+				<td>192.168.1.1</td>
+				<td>1027</td>
+				<td>10.101.10.1</td>
+				<td>80</td>
+				<td>backgrnd.gif</td>
+			</tr>
+			<tr>
+				<td>192.168.1.1</td>
+				<td>1028</td>
+				<td>198.41.0.9</td>
+				<td>23</td>
+				<td>telnet rs.internic.net</td>
+			</tr>
+		</tbody>
+	</table>
+	<p>
+		Now, I could go into exhaustive detail on how a TCP connection is set up and torn down, flow is controlled, and dropped packets are resent. Instead, I'll just say that TCP connections are set up and torn down, and there is flow control and automatic dropped packet redelivery. TCP is like certified mail; if no return receipt is gotten, the packet is resent (I'm oversimplifying but it's close enough.) TCP is used for "reliable" communications, where all data must get through, and must get there in the correct order.
+	</p>
+	<p>
+		A UDP packet, on the other hand, is more like junk mail. No effort is expended to make sure it arrives at the destination, or that all packets arrived that were sent. UDP is generally used for real-time applications like Internet radio and online gaming, where dropped packets need not be resent, and would probably be old if they were. UDP is also used when upper-layer protocols do their own flow control and data stream checking and correcting, as is the case in NCP/IP (Netware/IP) and SMB/IP (Microsoft Networking).
+	</p>
+	<p>
+		Web, Telnet, Mail, and other servers "listen" for new communications at "well-known" TCP port numbers. A short list:
+	</p>
+	<table bordercolor="#808080" border="1" class="ng-scope">
+		<tbody>
+			<tr>
+				<td><b>Service</b></td>
+				<td><b>"Well-Known" Port Number</b></td>
+			</tr>
+			<tr>
+				<td>FTP</td>
+				<td>21 &amp; 20 (don't ask)</td>
+			</tr>
+			<tr>
+				<td>Telnet</td>
+				<td>23</td>
+			</tr>
+			<tr>
+				<td>SMTP Mail</td>
+				<td>25</td>
+			</tr>
+			<tr>
+				<td>HTTP (Web)</td>
+				<td>80</td>
+			</tr>
+			<tr>
+				<td>POP3 Mail</td>
+				<td>110</td>
+			</tr>
+			<tr>
+				<td>News</td>
+				<td>119</td>
+			</tr>
+			<tr>
+				<td>IRC</td>
+				<td>6667</td>
+			</tr>
+		</tbody>
+	</table>
+	<p>
+		Publicly available services are generally always reached by connecting to their well-known port numbers.
+	</p>
+	<p>
+		A complete list of assigned Well-Known Ports can be found at <a href="http://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml">http://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml</a>
+	</p>
 </body>
 
 </html>
