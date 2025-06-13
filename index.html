@@ -2248,9 +2248,9 @@ Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 
 			Packet analysis is often the best way to troubleshoot errors; you can see, byte by byte, exactly what is being communicated from client to server and back. In some cases, packet analysis is the only way of diagnosing problems.
 		</p>
 		<p>More information on Wireshark and packet sniffing, see the Wireshark manual, at <a href="http://www.wireshark.org/docs/wsug_html_chunked/" target="_blank">http://www.wireshark.org/docs/wsug_html_chunked/</a>.</p>
-		
+
 		<hr>
-		
+
 		<h3>Wide Area Networking</h3>
 		<div style="background-color: lightgray; padding: 10px;">
 			<p>This section was originally written back when dial-up modems were still the most popular form of Internet access. While this is no longer true, the concepts are the same, and it's conceptually simpler to think about connectivity in terms of serial cables and modems. DSL and cable connections have replaced the old phone lines, but they still work the same way-- as serial cable extenders.</p>
@@ -2381,7 +2381,152 @@ Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 
 		<p>
 			Most of this document has covered networking methods that connect one computer directly to many computers, such as Ethernet or Token Ring. WAN links are, however, point-to-point, so they are treated a bit differently. Remember, each hop between communicating devices has the sole responsiblity of getting each packet to the next hop that is closer to the packet's destination. Routing tables on Ethernet-connected machines typically include the IP address of the next router, since simply specifying "the Ethernet interface" is not nearly specific enough. However, when routing over point-to-point links, next-hop specifications often are, simply, "send packets for these destinations over the Serial0 interface." We don't need to specify IP addresses for point-to-point connections (though many admins do), since the routing function can be completed simply by placing the packet on the wire that will bring it to the next hop toward its destination. If this seems confusing, remember: neither the source nor the destination IP address will change on the packet at any point between sending and receiving, though the layer 2 information will be repeatedly stripped off and replaced, as needed, by the intermediate routers. (Network Address Translation is, of course, an exception to this rule, since NAT alters both the IP and the (TCP or UDP) headers of all packets traversing a NAT router.)
 		</p>
+		
+		<hr>
+		
+		<h3>Glossary</h3>
+		<strong>"A" Record</strong>
+		<ol style="margin-left: 50px;">
+			<li>Used by Domain Name Service (DNS) administrators to assign an IP address to a host name.</li>
+			<li>A DNS host record, used to name-resolve all non-email addresses.</li>
+		</ol>
+		
+		<strong>Address Lookup</strong>
+		<p style="margin-left: 50px;">
+			<em>see</em> Domain Name Service.
+		</p>
+		
+		<strong>Address Resolution Protocol (ARP)</strong>
+		<ol style="margin-left: 50px;">
+			<li>A protocol used to find the network interface that "owns" a particular IP address.</li>
+			<li>On LANs, this is used to get the Layer 2 address of a host, so that IP transmission can take place over Layer 2 protocols like Ethernet or Token-Ring.</li>
+		</ol>
+		
+		<strong>Class</strong>
+		<ol style="margin-left: 50px;">
+			<li>[Common usage] "Class C Subnet" is a convenient shorthand for a network prefix of 255.255.255.0</li>
+			<li>The "old" way of allocating sections of the TCP/IP address space</li>
+		</ol>
+		<p style="margin-left: 50px;">see "Class A", etc. in "IP Addresses, Subnet Masks, and Subnetting, Part A," above.</p>
+		
+		<strong>Domain Name Service (DNS)</strong>
+		<ol style="margin-left: 50px;">
+			<li>The means by which computer names (e.g. "ipprimer.windsorcs.com") are converted into IP addresses.</li>
+			<li>All communication on the Internet is done based on IP addresses. The Domain Name Service allows "us humans" to use names for computers, which, for us, are much easier to understand and remember. The "address lookup" process converts address names like "www.microsoft.com" to IP addresses like "207.68.137.9".</li>
+		</ol>
+		
+		<strong>Host</strong>
+		<ol style="margin-left: 50px;">
+			<li>For purposes of this discussion, a Host is an IP-capable machine connected to an IP network.</li>
+			<li>A computing device attached to an IP network by only one interface. Although a host can have more than one interface, those hosts usually perform routing functions, and are therefore called routers.</li>
+		</ol>
+		
+		<strong>Interface</strong>
+		<ol style="margin-left: 50px;">
+			<li>A physical connection to a network.</li>
+			<li>An Ethernet card is an example of a Network <strong>Interface</strong> Card (NIC).</li>
+			<li>Any connection endpoint capable of sending and receiving packets over some medium.</li>
+		</ol>
+		
+		<strong>Internet Protocol (the IP in TCP/IP)</strong>
+		<ol style="margin-left: 50px;">
+			<li>The address system of the Internet.</li>
+			<li>The Internet Protocol is a four-byte addressing system, where each byte is expressed in decimal numbers and separated by a period, like "168.192.1.1".</li>
+		</ol>
+		
+		<strong>Internet Service Provider (ISP)</strong>
+		<ol style="margin-left: 50px;">
+			<li>The people you pay to get Internet access. (Besides the phone company)</li>
+			<li>Any person or company that provides services related to the Internet, esp. those that provide connections for home and office users.</li>
+		</ol>
+		
+		<strong>Internetwork Packet eXchange (IPX)</strong>
+		<ol style="margin-left: 50px;">
+			<li>The address system of Novell networks.</li>
+			<li>A protocol stack typically used on Novell networks. Useful for its simplicity of configuration, this protocol (in its current implementation) does not scale real well to large networks, for reasons touched on in the section "IP vs. IPX".</li>
+		</ol>
+		
+		<strong>Layer 1</strong>
+		<ol style="margin-left: 50px;">
+			<li>In OSI Model terms, the conceptual networking layer that defines electrical signaling on a wire.</li>
+		</ol>
+		
+		<strong>Layer 2</strong>
+		<ol style="margin-left: 50px;">
+			<li>In OSI Model terms, the conceptual networking layer that defines physical addressing and packetizing over a given wire.</li>
+		</ol>
+		
+		<strong>Layer 3</strong>
+		<ol style="margin-left: 50px;">
+			<li>In OSI Model terms, the conceptual networking layer that defines logical addressing and routing.</li>
+		</ol>
+		
+		<strong>"MX" Record</strong>
+		<ol style="margin-left: 50px;">
+			<li>A type of Domain Name System address, used specifically for Internet e-mail servers.</li>
+			<li>A DNS Mail eXchanger record, used to name-resolve email servers for purposes of mail delivery.</li>
+		</ol>
+		
+		<strong>Network Mask</strong>
+		<ol style="margin-left: 50px;">
+			<li>The fixed part of the subnet mask determined by the RFC 950 "Class" of address.</li>
+		</ol>
+		
+		<strong>Network Prefix</strong>
+		<ol style="margin-left: 50px;">
+			<li>A special "bit mask" used to determine which computers are on the local network, and which aren't.</li>
+			<li>Synonymous with Subnet Mask in common usage.</li>
+			<li>Under RFC 1812, "Network Prefix" combines and replaces "Network Mask" and "Subnet Mask," both depreciated RFC 950 concepts.</li>
+		</ol>
+		
+		<strong>Protocol Stack</strong>
+		<ol style="margin-left: 50px;">
+			<li>Networking software.</li>
+			<li>The software used to communicate on a network using a given protocol, e.g., "I'm running Windows for Workgroups and using the Microsoft TCPIP-32 implementation of the TCPIP protocol stack." The word "stack" is derived from the layered nature of networking.</li>
+		</ol>
+		
+		<strong>Router</strong>
+		<ol style="margin-left: 50px;">
+			<li>An Internet traffic director, responsible for sending packets to their correct destinations.</li>
+			<li>A host, with multiple interfaces, that performs routing.</li>
+			<li>A device with multiple interfaces that forwards packets based on their Layer 3 address.</li>
+		</ol>
+		
+		<strong>Routing</strong>
+		<ol style="margin-left: 50px;">
+			<li>The process of sending packets to their correct destination across multiple networks.</li>
+			<li>The process of intelligently forwarding packets from network segment to network segment based on their Layer 3 address.</li>
+		</ol>
+		
+		<strong>Segment</strong>
+		<ol style="margin-left: 50px;">
+			<li>A network segment.</li>
+			<li>A subnet.</li>
+			<li>In this discussion, a "network segment" is a collection of hosts and/or layer 2 networking devices bounded by routers.</li>
+		</ol>
+		
+		<strong>TCP/IP</strong>
+		<ol style="margin-left: 50px;">
+			<li>Transmission Control Protocol/Internet Protocol</li>
+			<li>The "TCP/IP Protocol Suite" describes all of the various communications protocols of the Internet.</li>
+			<li>Commonly used when people actually mean "IP". (e.g., "What's the TCP/IP address of that workstation?")</li>
+		</ol>
+		
+		<strong>Wide Area Network (WAN)</strong>
+		<ol style="margin-left: 50px;">
+			<li>A network that connects multiple non-contiguous sites.</li>
+			<li>Technically, the Internet can be considered to be the world's largest WAN.</li>
+			<li>A term generally used to describe any network that includes at least one dedicated link that involves paying the phone company.</li>
+			<li>Some people prefer to use the term Metropolitan Area Network (MAN) when a WAN doesn't connect sites in multiple cities, but the distinction is generally only made by the same people who get upset when they hear someone refer to a network card as a "NIC Card", since that would technically be redundant (as in, Network Interface Card Card).</li>
+		</ol>
+		
+		<footer>
+			<p style="text-align: center; font-size: 0.7em;">
+				Copyright &copy; 1996-2014 Daryl Banttari
+			</p>
+		</footer>
 	</div>
+	
 	<script src="assets/bootstrap-5.3.6-dist/js/bootstrap.min.js"></script>
 </body>
 
