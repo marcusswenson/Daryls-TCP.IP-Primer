@@ -11,7 +11,7 @@
 		body {
 			font-size: 0.9em;
 		}
-		
+
 		table,
 		tr,
 		td,
@@ -1227,6 +1227,1034 @@ primary 45.168.192.in-addr.arpa  db.inaddr</pre>
 				More to come / <a href="mailto:dbanttari@gmail.com">Your Tip Here</a>.
 			</li>
 		</ul>
+
+		<hr>
+
+		<h3>Packet Analysis</h3>
+		<p>
+			While talking about the theory of TCP communications is helpful, nothing beats a wire's eye view of actual IP communication.
+		</p>
+		<p>
+			If you plan to have a career in this field, then get used to packet sniffing, and learn to "read" packets and TCP communications. Also, learn how to read RFCs, and practice correlating communications captured from the wire against the protocols described in the RFCs. This way, you'll be able to debug system problems that hide from everyone else involved. What better way to achieve job security, than to make yourself indispensable to the organization?
+		</p>
+		<p>
+			The tool I'll use for this demonstration is Wireshark (<a href="http://www.wireshark.org/">http://www.wireshark.org/</a>), formerly Ethereal, an open-source packet analyzer. (Some call it a Packet Sniffer, but the name "Sniffer" is trademarked when used in that context.) I encourage you to download and install Wireshark on your computer, so you can follow along. I'll be using the Windows version, since most of the people that access Daryl's TCP/IP Primer do so from Windows-based machines.
+		</p>
+		<p>
+			First, download and install Wireshark.
+		</p>
+		<p>
+			We are going to capture the packets sent and received as we load the front page of <a href="https://yahoo.com/">Yahoo.com</a>, then decode and view the communication.
+		</p>
+		<ol>
+			<li style="padding-bottom: 10px;">
+				Under the Capture menu, choose Start (or, just press Ctrl-K). Then click OK to begin the capture:
+				<br>
+				<img src="assets/img/ethereal1.gif">
+				<br>
+				<em>Yes, the screenshots say "Ethereal", not "Wireshark". Not my fault they changed the name.</em>
+			</li>
+			<li style="padding-bottom: 10px;">Click on this link, which will open a new window: <a href="http://www.yahoo.com/" target="_blank">http://www.yahoo.com/</a></li>
+			<li style="padding-bottom: 10px;">Now stop the packet capture by clicking on the Stop button.</li>
+			<li style="padding-bottom: 10px;">
+				Now review the packets you captured. (By default, Wireshark will do a reverse lookup on each different IP address it encounters, which can slow the display process significantly, especially if your DNS resolution is slow to begin with. You can avoid this by unchecking the "Enable Network Name Resolution" option under "Display", "Options...") If you're on a shared-media network (such as Ethernet or a cable modem) you may see many packets unrelated to your current communication:
+				<br>
+				<img src="assets/img/ethereal2.gif">
+			</li>
+		</ol>
+		<p>
+			What you can see in my capture is the cable network's router, at 65.28.72.1, asking for the MAC address of several other machines on the network. It would seem that the cable network simulates an Ethernet network, since the ARP packets have Ethernet II headers (as seen in the middle window.)
+		</p>
+		<p>
+			If we skip past the ARP and DHCP broadcast noise, we see the first packet related to our communication, a DNS lookup, needed to map "www.yahoo.com" to an IP address (partially expanded):
+		</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 10</b> (62 on wire, 62 captured)
+Ethernet II
+	Destination: 00:30:94:d3:11:54 (mkc-65-26-66-1.kc.rr.com)
+	Source: 00:04:75:19:dd:be (00:04:75:19:dd:be)
+	Type: IP (0x0800)
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: kscymo1-mls1.rdc-kc.rr.com (24.94.163.165)
+User Datagram Protocol, Src Port: 1075 (1075), Dst Port: domain (53)
+Domain Name System (query)
+	Transaction ID: 0x000d
+	Flags: 0x0100 (Standard query)
+	Questions: 1
+	Answer RRs: 0
+	Authority RRs: 0
+	Additional RRs: 0
+	Queries
+		www.yahoo.com: type A, class inet</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>
+			Notice that the destination Ethernet address is that of the router, while the destination IP is beyond the router. Each hop is really only concerned with finding the correct device to handle the next hop, then passing the packet to that device by whatever layer 2 protocol is available. So, my machine is simply passing the packet to the router via Ethernet. I assume the router will then pass it to the next router that is close to the DNS server, and so forth until the DNS server is reached.
+		</p>
+		<p>
+			The response packet lists all A records associated:
+		</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 13</b> (62 on wire, 62 captured)
+Ethernet II
+	Destination: 00:04:75:19:dd:be (00:04:75:19:dd:be)
+	Source: 00:30:94:d3:11:54 (mkc-65-26-66-1.kc.rr.com)
+	Type: IP (0x0800)
+Internet Protocol, Src Addr: kscymo1-mls1.rdc-kc.rr.com (24.94.163.165), Dst Addr: DBANTTARI (65.28.72.130)
+User Datagram Protocol, Src Port: domain (53), Dst Port: 1077 (1077)
+Domain Name System (response)
+	Transaction ID: 0x0009
+	Flags: 0x8180 (Standard query response, No error)
+	Questions: 1
+	Answer RRs: 13
+	Authority RRs: 8
+	Additional RRs: 7
+	Queries
+		www.yahoo.com: type A, class inet
+			Name: www.yahoo.com
+			Type: Host address
+			Class: inet
+	Answers
+		www.yahoo.com: type CNAME, class inet, cname www.yahoo.akadns.net
+		www.yahoo.akadns.net: type A, class inet, addr 64.58.76.223
+		www.yahoo.akadns.net: type A, class inet, addr 64.58.76.228
+		www.yahoo.akadns.net: type A, class inet, addr 64.58.76.224
+		www.yahoo.akadns.net: type A, class inet, addr 64.58.76.177
+		www.yahoo.akadns.net: type A, class inet, addr 64.58.76.178
+		www.yahoo.akadns.net: type A, class inet, addr 64.58.76.222
+		www.yahoo.akadns.net: type A, class inet, addr 64.58.76.225
+		www.yahoo.akadns.net: type A, class inet, addr 64.58.76.229
+		www.yahoo.akadns.net: type A, class inet, addr 64.58.76.179
+		www.yahoo.akadns.net: type A, class inet, addr 64.58.76.176
+		www.yahoo.akadns.net: type A, class inet, addr 64.58.76.226
+		www.yahoo.akadns.net: type A, class inet, addr 64.58.76.227
+	Authoritative nameservers
+		akadns.net: type NS, class inet, ns ZA.akadns.net
+		akadns.net: type NS, class inet, ns ZB.akadns.net
+		akadns.net: type NS, class inet, ns ZC.akadns.net
+		akadns.net: type NS, class inet, ns ZD.akadns.net
+		akadns.net: type NS, class inet, ns ZE.akadns.net
+		akadns.net: type NS, class inet, ns ZF.akadns.net
+		akadns.net: type NS, class inet, ns ZG.akadns.net
+		akadns.net: type NS, class inet, ns ZH.akadns.net
+	Additional records
+		ZA.akadns.net: type A, class inet, addr 216.32.65.105
+		ZB.akadns.net: type A, class inet, addr 216.200.14.118
+		ZC.akadns.net: type A, class inet, addr 204.178.107.227
+		ZD.akadns.net: type A, class inet, addr 206.132.160.36
+		ZE.akadns.net: type A, class inet, addr 12.47.217.11
+		ZF.akadns.net: type A, class inet, addr 63.215.198.79
+		ZG.akadns.net: type A, class inet, addr 204.248.36.131</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>
+			Looks like Yahoo has no shortage of name servers or IP addresses.
+		</p>
+		<p>
+			Now that we have an IP address (or 12), we can choose one of them and try to connect, by sending a SYN ("Synchronize") packet to port 80:
+		</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 14</b> (62 on wire, 62 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525356, Ack: 0
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525356
+	Header length: 28 bytes
+	Flags: 0x0002 (SYN)
+	Window size: 16384
+	Checksum: 0x1f12 (correct)
+	Options: (8 bytes)
+		Maximum segment size: 1360 bytes
+		NOP
+		NOP
+		SACK permitted
+						</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<p>And the response:</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 16</b> (60 on wire, 60 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906338462, Ack: 1166525357
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906338462
+	Acknowledgement number: 1166525357
+	Header length: 24 bytes
+	Flags: 0x0012 (SYN, ACK)
+	Window size: 17680
+	Checksum: 0x57f0 (correct)
+	Options: (4 bytes)
+		Maximum segment size: 1460 bytes
+						</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>Note that the Synchronize and Acknowledge flags are set on the response.</p>
+		<p>We can now acknowledge the TCP connection open packet, and send our actual message:</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 17</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525357, Ack: 906338463
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525357
+	Acknowledgement number: 906338463
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x16d2 (incorrect, should be 0x6fad)
+
+<b>Frame 18</b> (329 on wire, 329 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525357, Ack: 906338463
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525357
+	Next sequence number: 1166525632
+	Acknowledgement number: 906338463
+	Header length: 20 bytes
+	Flags: 0x0018 (PSH, ACK)
+	Window size: 17680
+	Checksum: 0x17e5 (incorrect, should be 0x4547)
+Hypertext Transfer Protocol
+	GET / HTTP/1.1\r\n
+	Accept: */*\r\n
+	Referer: http://www.ipprimer.com/packets.cfm\r\n
+	Accept-Language: en-us\r\n
+	Accept-Encoding: gzip, deflate\r\n
+	User-Agent: Mozilla/4.0 (compatible; MSIE 5.5; Windows NT 5.0)\r\n
+	Host: www.yahoo.com\r\n
+	Connection: Keep-Alive\r\n
+	Cookie: B=shyg4f0xg4tmp&amp;b=2&amp;f=v\r\n
+	\r\n
+						</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>
+			The Push flag indicates that we're done transmitting; the destination IP stack should send the data to the receiving application without attempting to buffer any more of the communication. Note that UDP does not have PSH nor ACK flags; UDP is not buffered at the transport layer. TCP required 4 packets to get any data to the server; DNS has very short communications, so UDP is used because it has very low overhead. HTTP uses TCP, since the downloads can be very long, and TCP has built-in flow-control, resending of dropped packets, and resequencing of misordered packets.
+		</p>
+		<p>We will now start receiving response packets:</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 20</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906338463, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906338463
+	Next sequence number: 906339823
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x4df8 (correct)
+Hypertext Transfer Protocol
+	HTTP/1.0 200 OK\r\n
+	Date: Sun, 14 Oct 2001 03:53:44 GMT\r\n
+	Vary: User-Agent\r\n
+	Connection: close\r\n
+	Content-Type: text/html\r\n
+	\r\n
+	Data (1242 bytes)
+
+0000  3c 68 74 6d 6c 3e 3c 68 65 61 64 3e 3c 74 69 74   &lt;html&gt;&lt;head&gt;&lt;tit             
+0010  6c 65 3e 59 61 68 6f 6f 21 3c 2f 74 69 74 6c 65   le&gt;Yahoo!&lt;/title             
+<i><i>(blah, blah, blah...)</i></i>
+04c0  3d 79 61 68 6f 6f 66 5f 31 34 25 32 36 73 6f 75   =yahoof_14%26sou             
+04d0  72 63 65 49 44 3d 79 61 68 6f                     rceID=yaho                   
+
+<b>Frame 21</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906339823, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906339823
+	Next sequence number: 906341183
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x9248 (correct)
+Hypertext Transfer Protocol
+	Data (1360 bytes)
+
+0000  6f 66 5f 31 34 22 20 74 61 72 67 65 74 3d 22 5f   of_14" target="_             
+0010  74 6f 70 22 3e 3c 69 6d 67 20 77 69 64 74 68 3d   top"&gt;&lt;img width=             
+<i>(blah, blah, blah...)</i>
+0530  38 33 3b 0a 3c 61 20 68 72 65 66 3d 72 2f 67 63   83;.&lt;a href=r/gc             
+0540  3e 47 65 6f 43 69 74 69 65 73 3c 2f 61 3e 20 26   &gt;GeoCities&lt;/a&gt; &amp;             
+						</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<p>And we start seeing my acknowledgement packets as well:</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 22</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525632, Ack: 906341183
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525632
+	Acknowledgement number: 906341183
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x16d2 (incorrect, should be 0x63fa)
+
+<b>Frame 23</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906341183, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906341183
+	Next sequence number: 906342543
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x59c0 (correct)
+Hypertext Transfer Protocol
+	Data (1360 bytes)
+
+0000  23 31 38 33 3b 0a 3c 61 20 68 72 65 66 3d 72 2f   #183;.&lt;a href=r/             
+0010  67 72 3e 47 72 65 65 74 69 6e 67 73 3c 2f 61 3e   gr&gt;Greetings&lt;/a&gt;             
+<i>(blah, blah, blah...)</i>
+0530  3b 20 3c 61 20 68 72 65 66 3d 73 2f 32 30 38 35   ; &lt;a href=s/2085             
+0540  3e 4d 69 63 68 61 65 6c 20 4a 6f 72 64 61 6e 3c   &gt;Michael Jordan&lt;             
+
+<b>Frame 24</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525632, Ack: 906342543
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525632
+	Acknowledgement number: 906342543
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x16d2 (incorrect, should be 0x5eaa)
+
+<b>Frame 25</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906342543, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906342543
+	Next sequence number: 906343903
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x49e9 (correct)
+Hypertext Transfer Protocol
+	Data (1360 bytes)
+
+0000  2f 61 3e 3c 62 72 3e 0a 26 6e 62 73 70 3b 20 26   /a&gt;&lt;br&gt;.&amp;nbsp; &amp;             
+0010  23 31 38 33 3b 20 3c 61 20 68 72 65 66 3d 73 2f   #183; &lt;a href=s/             
+<i>(blah, blah, blah...)</i>
+0530  70 61 64 64 69 6e 67 3d 34 3e 3c 74 72 3e 3c 74   padding=4&gt;&lt;tr&gt;&lt;t             
+0540  64 20 76 61 6c 69 67 6e 3d 74 6f 70 20 6e 6f 77   d valign=top now             
+
+<b>Frame 26</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906343903, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906343903
+	Next sequence number: 906345263
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x7d26 (correct)
+Hypertext Transfer Protocol
+	Data (1360 bytes)
+
+0000  72 61 70 3e 3c 73 6d 61 6c 6c 3e 3c 66 6f 6e 74   rap&gt;&lt;small&gt;&lt;font             
+0010  20 73 69 7a 65 3d 33 20 66 61 63 65 3d 61 72 69    size=3 face=ari             
+<i>(blah, blah, blah...)</i>
+0530  6c 6c 20 43 6f 76 65 72 61 67 65 3c 2f 61 3e 2c   ll Coverage&lt;/a&gt;,             
+0540  0a 3c 61 20 68 72 65 66 3d 72 2f 6e 77 3e 4e 65   .&lt;a href=r/nw&gt;Ne             
+
+<b>Frame 27</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525632, Ack: 906345263
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525632
+	Acknowledgement number: 906345263
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x16d2 (incorrect, should be 0x540a)
+
+<b>Frame 28</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906345263, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906345263
+	Next sequence number: 906346623
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x8e4b (correct)
+Hypertext Transfer Protocol
+	Data (1360 bytes)
+
+0000  77 73 70 61 70 65 72 73 3c 2f 61 3e 2c 0a 3c 61   wspapers&lt;/a&gt;,.&lt;a             
+0010  20 68 72 65 66 3d 72 2f 74 76 3e 54 56 3c 2f 61    href=r/tv&gt;TV&lt;/a             
+<i>(blah, blah, blah...)</i>
+0530  30 33 30 33 31 36 32 34 2b 68 74 74 70 3a 2f 2f   03031624+http://             
+0540  75 73 2e 72 6d 69 2e 79 61 68 6f 6f 2e 63 6f 6d   us.rmi.yahoo.com             
+
+<b>Frame 29</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525632, Ack: 906346623
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525632
+	Acknowledgement number: 906346623
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x16d2 (incorrect, should be 0x4eba)
+
+<b>Frame 30</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906346623, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906346623
+	Next sequence number: 906347983
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0xf66f (correct)
+Hypertext Transfer Protocol
+	Data (1360 bytes)
+
+0000  2f 72 6d 69 2f 68 74 74 70 3a 2f 2f 77 77 77 2e   /rmi/http://www.             
+0010  63 6f 6d 70 61 71 2e 63 6f 6d 2f 72 6d 69 2d 66   compaq.com/rmi-f             
+0020  72 61 6d 65 64 2d 75 72 6c 2f 68 74 74 70 3a 2f   ramed-url/http:/             
+0030  2f 77 77 77 2e 63 6f 6d 70 61 71 2e 63 6f 6d 2f   /www.compaq.com/             
+0040  79 61 68 6f 6f 2f 22 3e 3c 69 6d 67 20 73 72 63   yahoo/"&gt;&lt;img src             
+0050  3d 22 68 74 74 70 3a 2f 2f 75 73 2e 61 31 2e 79   ="http://us.a1.y             
+0060  69 6d 67 2e 63 6f 6d 2f 75 73 2e 79 69 6d 67 2e   img.com/us.yimg.             
+0070  63 6f 6d 2f 61 2f 63 6f 2f 63 6f 6d 70 61 71 5f   com/a/co/compaq_             
+0080  63 6f 6d 70 5f 63 6f 72 70 2f 70 6f 77 65 72 65   comp_corp/powere             
+0090  64 5f 62 79 5f 77 68 69 74 65 5f 39 35 78 33 30   d_by_white_95x30             
+00a0  2e 67 69 66 22 20 61 6c 74 3d 22 22 20 62 6f 72   .gif" alt="" bor             
+00b0  64 65 72 3d 22 30 22 20 77 69 64 74 68 3d 22 39   der="0" width="9             
+00c0  35 22 20 68 65 69 67 68 74 3d 22 33 30 22 3e 3c   5" height="30"&gt;&lt;             
+<i>(blah, blah, blah...)</i>
+0530  61 72 63 68 3c 2f 61 3e 3c 2f 73 6d 61 6c 6c 3e   arch&lt;/a&gt;&lt;/small&gt;             
+0540  3c 2f 74 64 3e 3c 2f 74 72 3e 3c 74 72 3e 3c 74   &lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;t             
+						</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<p>In the previous packet, notice the reference to an image from us.al.yimg.com in the HTML data.</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 31</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906347983, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906347983
+	Next sequence number: 906349343
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0xc485 (correct)
+Hypertext Transfer Protocol
+	Data (1360 bytes)
+
+0000  64 20 76 61 6c 69 67 6e 3d 74 6f 70 3e 3c 62 3e   d valign=top&gt;&lt;b&gt;             
+0010  26 6e 62 73 70 3b 26 23 31 38 33 3b 26 6e 62 73   &amp;nbsp;&amp;#183;&amp;nbs             
+<i>(blah, blah, blah...)</i>
+0530  62 6f 72 64 65 72 3d 30 3e 3c 74 72 3e 3c 74 64   border=0&gt;&lt;tr&gt;&lt;td             
+0540  20 76 61 6c 69 67 6e 3d 74 6f 70 3e 3c 62 3e 26    valign=top&gt;&lt;b&gt;&amp;             
+
+<b>Frame 32</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525632, Ack: 906349343
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525632
+	Acknowledgement number: 906349343
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x16d2 (incorrect, should be 0x441a)
+						</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<p>The browser, having noticed the reference to the image at us.al.yimg.com in the HTML, prepares to download the image by initiating a DNS lookup on us.al.yimg.com:</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 33</b> (74 on wire, 74 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: kscymo1-mls1.rdc-kc.rr.com (24.94.163.165)
+User Datagram Protocol, Src Port: 1079 (1079), Dst Port: domain (53)
+Domain Name System (query)
+	Transaction ID: 0x000a
+	Flags: 0x0100 (Standard query)
+	Questions: 1
+	Answer RRs: 0
+	Authority RRs: 0
+	Additional RRs: 0
+	Queries
+		us.a1.yimg.com: type A, class inet
+
+<b>Frame 34</b> (434 on wire, 434 captured)
+Ethernet II
+Internet Protocol, Src Addr: kscymo1-mls1.rdc-kc.rr.com (24.94.163.165), Dst Addr: DBANTTARI (65.28.72.130)
+User Datagram Protocol, Src Port: domain (53), Dst Port: 1079 (1079)
+Domain Name System (response)
+	Transaction ID: 0x000a
+	Flags: 0x8180 (Standard query response, No error)
+	Questions: 1
+	Answer RRs: 3
+	Authority RRs: 9
+	Additional RRs: 9
+	Queries
+		us.a1.yimg.com: type A, class inet
+			Name: us.a1.yimg.com
+			Type: Host address
+			Class: inet
+	Answers
+		us.a1.yimg.com: type CNAME, class inet, cname a32.g.a.yimg.com
+		a32.g.a.yimg.com: type A, class inet, addr 24.94.162.91
+		a32.g.a.yimg.com: type A, class inet, addr 24.94.162.90
+	Authoritative nameservers
+		g.a.yimg.com: type NS, class inet, ns n0g.a.yimg.com
+		g.a.yimg.com: type NS, class inet, ns n1g.a.yimg.com
+		g.a.yimg.com: type NS, class inet, ns n6g.a.yimg.com
+		g.a.yimg.com: type NS, class inet, ns n2g.a.yimg.com
+		g.a.yimg.com: type NS, class inet, ns n3g.a.yimg.com
+		g.a.yimg.com: type NS, class inet, ns n7g.a.yimg.com
+		g.a.yimg.com: type NS, class inet, ns n4g.a.yimg.com
+		g.a.yimg.com: type NS, class inet, ns n5g.a.yimg.com
+		g.a.yimg.com: type NS, class inet, ns n8g.a.yimg.com
+	Additional records
+		n0g.a.yimg.com: type A, class inet, addr 24.94.162.85
+		n1g.a.yimg.com: type A, class inet, addr 24.94.162.86
+		n6g.a.yimg.com: type A, class inet, addr 164.113.247.89
+		n2g.a.yimg.com: type A, class inet, addr 24.94.162.85
+		n3g.a.yimg.com: type A, class inet, addr 24.94.162.85
+		n7g.a.yimg.com: type A, class inet, addr 18.7.20.66
+		n4g.a.yimg.com: type A, class inet, addr 24.94.162.85
+		n5g.a.yimg.com: type A, class inet, addr 24.94.162.85
+		n8g.a.yimg.com: type A, class inet, addr 24.94.162.85
+		</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<p>Having retrieved an IP address, the browser begins loading the image, while we're still in the process of downloading the HTML from Yahoo:</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 35</b> (62 on wire, 62 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: a32.g.a.yimg.com (24.94.162.91)
+Transmission Control Protocol, Src Port: 1080 (1080), Dst Port: http (80), Seq: 1166630283, Ack: 0
+	Source port: 1080 (1080)
+	Destination port: http (80)
+	Sequence number: 1166630283
+	Header length: 28 bytes
+	Flags: 0x0002 (SYN)
+	Window size: 16384
+	Checksum: 0x578f (correct)
+	Options: (8 bytes)
+		Maximum segment size: 1360 bytes
+		NOP
+		NOP
+		SACK permitted
+
+<b>Frame 36</b> (62 on wire, 62 captured)
+Ethernet II
+Internet Protocol, Src Addr: a32.g.a.yimg.com (24.94.162.91), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1080 (1080), Seq: 3443607970, Ack: 1166630284
+	Source port: http (80)
+	Destination port: 1080 (1080)
+	Sequence number: 3443607970
+	Acknowledgement number: 1166630284
+	Header length: 28 bytes
+	Flags: 0x0012 (SYN, ACK)
+	Window size: 32640
+	Checksum: 0x011a (correct)
+	Options: (8 bytes)
+		Maximum segment size: 1360 bytes
+		NOP
+		NOP
+		SACK permitted
+
+<b>Frame 37</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: a32.g.a.yimg.com (24.94.162.91)
+Transmission Control Protocol, Src Port: 1080 (1080), Dst Port: http (80), Seq: 1166630284, Ack: 3443607971
+	Source port: 1080 (1080)
+	Destination port: http (80)
+	Sequence number: 1166630284
+	Acknowledgement number: 3443607971
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x4472 (incorrect, should be 0x67ea)
+
+<b>Frame 38</b> (318 on wire, 318 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: a32.g.a.yimg.com (24.94.162.91)
+Transmission Control Protocol, Src Port: 1080 (1080), Dst Port: http (80), Seq: 1166630284, Ack: 3443607971
+	Source port: 1080 (1080)
+	Destination port: http (80)
+	Sequence number: 1166630284
+	Next sequence number: 1166630548
+	Acknowledgement number: 3443607971
+	Header length: 20 bytes
+	Flags: 0x0018 (PSH, ACK)
+	Window size: 17680
+	Checksum: 0x457a (incorrect, should be 0x59d2)
+Socks Protocol
+		</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>
+			Socks protocol?? It would seem our packet analyzer is confused by the fact that the source TCP port number for this connection is 1080, which is commonly used by the Socks protocol. So, we won't get to see the HTTP GET request for one of the images used on the page. Note that Wireshark does allow you to override the decode, but I didn't do that here.
+		</p>
+		<p>
+			Watch the destinations and port numbers carefully; we have two different TCP connections active at the same time. It's easy to get confused, if you're not a computer.
+		</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 39</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906349343, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906349343
+	Next sequence number: 906350703
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0xce3d (correct)
+Hypertext Transfer Protocol
+	Data (1360 bytes)
+
+0000  6e 62 73 70 3b 26 23 31 38 33 3b 26 6e 62 73 70   nbsp;&amp;#183;&amp;nbsp             
+0010  3b 3c 2f 62 3e 3c 2f 74 64 3e 3c 74 64 20 77 69   ;&lt;/b&gt;&lt;/td&gt;&lt;td wi             
+<i>(blah, blah, blah...)</i>
+0530  6f 72 6b 79 20 52 6f 6d 61 6e 6f 3c 2f 61 3e 2c   orky Romano&lt;/a&gt;,             
+0540  20 3c 61 20 68 72 65 66 3d 73 2f 32 31 38 39 3e    &lt;a href=s/2189&gt;             
+
+<b>Frame 40</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525632, Ack: 906350703
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525632
+	Acknowledgement number: 906350703
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x16d2 (incorrect, should be 0x3eca)
+
+<b>Frame 41</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906350703, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906350703
+	Next sequence number: 906352063
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x4b3c (correct)
+Hypertext Transfer Protocol
+	Data (1360 bytes)
+
+0000  54 72 61 69 6e 69 6e 67 20 44 61 79 3c 2f 61 3e   Training Day&lt;/a&gt;             
+0010  3c 2f 73 6d 61 6c 6c 3e 3c 2f 74 64 3e 3c 2f 74   &lt;/small&gt;&lt;/td&gt;&lt;/t             
+<i>(blah, blah, blah...)</i>
+0530  0a 3c 61 20 68 72 65 66 3d 72 2f 61 74 3e 41 74   .&lt;a href=r/at&gt;At             
+0540  6c 61 6e 74 61 3c 2f 61 3e 20 2d 0a 3c 61 20 68   lanta&lt;/a&gt; -.&lt;a h             
+
+<b>Frame 42</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906352063, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906352063
+	Next sequence number: 906353423
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0xa86d (correct)
+Hypertext Transfer Protocol
+	Data (1360 bytes)
+
+0000  72 65 66 3d 72 2f 62 6f 3e 42 6f 73 74 6f 6e 3c   ref=r/bo&gt;Boston&lt;             
+0010  2f 61 3e 20 2d 0a 3c 61 20 68 72 65 66 3d 72 2f   /a&gt; -.&lt;a href=r/             
+<i>(blah, blah, blah...)</i>
+0530  65 64 73 3c 2f 61 3e 20 2d 0a 3c 61 20 68 72 65   eds&lt;/a&gt; -.&lt;a hre             
+0540  66 3d 72 2f 6c 65 3e 45 76 65 6e 74 73 3c 2f 61   f=r/le&gt;Events&lt;/a             
+
+<b>Frame 43</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525632, Ack: 906353423
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525632
+	Acknowledgement number: 906353423
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x16d2 (incorrect, should be 0x342a)
+
+<b>Frame 44</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906353423, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906353423
+	Next sequence number: 906354783
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x8df1 (correct)
+Hypertext Transfer Protocol
+	Data (1360 bytes)
+
+0000  3e 20 2d 0a 3c 61 20 68 72 65 66 3d 72 2f 6c 64   &gt; -.&lt;a href=r/ld             
+0010  3e 4c 6f 64 67 69 6e 67 3c 2f 61 3e 20 2d 0a 3c   &gt;Lodging&lt;/a&gt; -.&lt;             
+<i>(blah, blah, blah...)</i>
+0530  3c 61 20 68 72 65 66 3d 72 2f 63 70 3e 43 6f 6d   &lt;a href=r/cp&gt;Com             
+0540  70 61 6e 79 20 49 6e 66 6f 3c 2f 61 3e 20 2d 0a   pany Info&lt;/a&gt; -.             
+
+<b>Frame 45</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525632, Ack: 906354783
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525632
+	Acknowledgement number: 906354783
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x16d2 (incorrect, should be 0x2eda)
+		</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<p>Finally, we get the last packet of the HTML data from Yahoo:</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 46</b> (341 on wire, 341 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906354783, Ack: 1166525632
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906354783
+	Next sequence number: 906355070
+	Acknowledgement number: 1166525632
+	Header length: 20 bytes
+	Flags: 0x0019 (FIN, PSH, ACK)
+	Window size: 17680
+	Checksum: 0x05b9 (correct)
+Hypertext Transfer Protocol
+	Data (287 bytes)
+
+0000  3c 61 20 68 72 65 66 3d 72 2f 63 79 3e 43 6f 70   &lt;a href=r/cy&gt;Cop             
+0010  79 72 69 67 68 74 20 50 6f 6c 69 63 79 3c 2f 61   yright Policy&lt;/a             
+<i>(blah, blah, blah...)</i>
+0100  3c 2f 66 6f 72 6d 3e 3c 2f 63 65 6e 74 65 72 3e   &lt;/form&gt;&lt;/center&gt;             
+0110  3c 2f 62 6f 64 79 3e 3c 2f 68 74 6d 6c 3e 0a      &lt;/body&gt;&lt;/html&gt;.              
+		</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>
+			The PSH and ACK flags are familiar; the FIN flag indicates the destination's intent to close the TCP connection. So, we ACK the last packet from Yahoo; we'll respond to their FIN in a moment.
+		</p>
+		<table border="0" class="ng-scope">
+			<tbody>
+				<tr>
+					<td bgcolor="eeeeee">
+						<pre><b>Frame 47</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525632, Ack: 906355071
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525632
+	Acknowledgement number: 906355071
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17393
+	Checksum: 0x16d2 (incorrect, should be 0x2ed9)
+		</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<p>Meanwhile, life on our connection to a32.g.a.yimg.com continues...</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 48</b> (60 on wire, 60 captured)
+Ethernet II
+Internet Protocol, Src Addr: a32.g.a.yimg.com (24.94.162.91), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1080 (1080), Seq: 3443607971, Ack: 1166630548
+	Source port: http (80)
+	Destination port: 1080 (1080)
+	Sequence number: 3443607971
+	Acknowledgement number: 1166630548
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 32376
+	Checksum: 0x2d7a (correct)
+
+<b>Frame 49</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: a32.g.a.yimg.com (24.94.162.91), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1080 (1080), Seq: 3443607971, Ack: 1166630548
+	Source port: http (80)
+	Destination port: 1080 (1080)
+	Sequence number: 3443607971
+	Next sequence number: 3443609331
+	Acknowledgement number: 1166630548
+	Header length: 20 bytes
+	Flags: 0x0018 (PSH, ACK)
+	Window size: 32640
+	Checksum: 0x701a (correct)
+Socks Protocol
+
+<b>Frame 50</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: a32.g.a.yimg.com (24.94.162.91), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1080 (1080), Seq: 3443609331, Ack: 1166630548
+	Source port: http (80)
+	Destination port: 1080 (1080)
+	Sequence number: 3443609331
+	Next sequence number: 3443610691
+	Acknowledgement number: 1166630548
+	Header length: 20 bytes
+	Flags: 0x0018 (PSH, ACK)
+	Window size: 32640
+	Checksum: 0xb0b1 (correct)
+Socks Protocol
+
+<b>Frame 51</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: a32.g.a.yimg.com (24.94.162.91)
+Transmission Control Protocol, Src Port: 1080 (1080), Dst Port: http (80), Seq: 1166630548, Ack: 3443610691
+	Source port: 1080 (1080)
+	Destination port: http (80)
+	Sequence number: 1166630548
+	Acknowledgement number: 3443610691
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x4472 (incorrect, should be 0x5c42)
+
+<b>Frame 52</b> (1414 on wire, 1414 captured)
+Ethernet II
+Internet Protocol, Src Addr: a32.g.a.yimg.com (24.94.162.91), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1080 (1080), Seq: 3443610691, Ack: 1166630548
+	Source port: http (80)
+	Destination port: 1080 (1080)
+	Sequence number: 3443610691
+	Next sequence number: 3443612051
+	Acknowledgement number: 1166630548
+	Header length: 20 bytes
+	Flags: 0x0018 (PSH, ACK)
+	Window size: 32640
+	Checksum: 0x7430 (correct)
+Socks Protocol
+		</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<p>Looks like our image is done, we got a packet with a PSH flag.</p>
+		<p>In other news, we now respond to the server we got the HTML from, with a FIN/ACK flag pair, indicating that we agree to close the connection:</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 53</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: www.yahoo.akadns.net (64.58.76.223)
+Transmission Control Protocol, Src Port: 1078 (1078), Dst Port: http (80), Seq: 1166525632, Ack: 906355071
+	Source port: 1078 (1078)
+	Destination port: http (80)
+	Sequence number: 1166525632
+	Acknowledgement number: 906355071
+	Header length: 20 bytes
+	Flags: 0x0011 (FIN, ACK)
+	Window size: 17393
+	Checksum: 0x16d2 (incorrect, should be 0x2ed8)
+
+<b>Frame 54</b> (683 on wire, 683 captured)
+Ethernet II
+Internet Protocol, Src Addr: a32.g.a.yimg.com (24.94.162.91), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1080 (1080), Seq: 3443612051, Ack: 1166630548
+	Source port: http (80)
+	Destination port: 1080 (1080)
+	Sequence number: 3443612051
+	Next sequence number: 3443612680
+	Acknowledgement number: 1166630548
+	Header length: 20 bytes
+	Flags: 0x0018 (PSH, ACK)
+	Window size: 32640
+	Checksum: 0xd01e (correct)
+Socks Protocol
+
+<b>Frame 55</b> (54 on wire, 54 captured)
+Ethernet II
+Internet Protocol, Src Addr: DBANTTARI (65.28.72.130), Dst Addr: a32.g.a.yimg.com (24.94.162.91)
+Transmission Control Protocol, Src Port: 1080 (1080), Dst Port: http (80), Seq: 1166630548, Ack: 3443612680
+	Source port: 1080 (1080)
+	Destination port: http (80)
+	Sequence number: 1166630548
+	Acknowledgement number: 3443612680
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x4472 (incorrect, should be 0x547d)
+		</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<p>And finally, we get the last ACK from Yahoo, officially closing the connection.</p>
+		<table border="0">
+			<tbody>
+				<tr>
+					<td style="background-color: lightgray;">
+						<pre><b>Frame 56</b> (60 on wire, 60 captured)
+Ethernet II
+Internet Protocol, Src Addr: www.yahoo.akadns.net (64.58.76.223), Dst Addr: DBANTTARI (65.28.72.130)
+Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 906355071, Ack: 1166525633
+	Source port: http (80)
+	Destination port: 1078 (1078)
+	Sequence number: 906355071
+	Acknowledgement number: 1166525633
+	Header length: 20 bytes
+	Flags: 0x0010 (ACK)
+	Window size: 17680
+	Checksum: 0x2db9 (correct)
+		</pre>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p>
+			In this trace, we don't see the image connections to the image server being closed, but they're probably reused anyway (HTTP 1.1 allows this.)
+		</p>
+		<p>
+			Packet analysis is often the best way to troubleshoot errors; you can see, byte by byte, exactly what is being communicated from client to server and back. In some cases, packet analysis is the only way of diagnosing problems.
+		</p>
+		<p>More information on Wireshark and packet sniffing, see the Wireshark manual, at <a href="http://www.wireshark.org/docs/wsug_html_chunked/" target="_blank">http://www.wireshark.org/docs/wsug_html_chunked/</a>.</p>
+		
+		<hr>
+		
+		<h3>Wide Area Networking</h3>
+		<div style="background-color: lightgray; padding: 10px;">
+			<p>This section was originally written back when dial-up modems were still the most popular form of Internet access. While this is no longer true, the concepts are the same, and it's conceptually simpler to think about connectivity in terms of serial cables and modems. DSL and cable connections have replaced the old phone lines, but they still work the same way-- as serial cable extenders.</p>
+		</div>
 	</div>
 	<script src="assets/bootstrap-5.3.6-dist/js/bootstrap.min.js"></script>
 </body>
