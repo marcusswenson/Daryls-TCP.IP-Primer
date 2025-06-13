@@ -2255,6 +2255,132 @@ Transmission Control Protocol, Src Port: http (80), Dst Port: 1078 (1078), Seq: 
 		<div style="background-color: lightgray; padding: 10px;">
 			<p>This section was originally written back when dial-up modems were still the most popular form of Internet access. While this is no longer true, the concepts are the same, and it's conceptually simpler to think about connectivity in terms of serial cables and modems. DSL and cable connections have replaced the old phone lines, but they still work the same way-- as serial cable extenders.</p>
 		</div>
+		<br>
+		<p>
+			Wide area networking is actually fairly simple conceptually, but can also be one of the most difficult aspects of networking. On the Near Side of the 'Net, however, things rarely get exceedingly difficult, and with a proper understanding, can be quite easy and simple.
+		</p>
+		<p>
+			It's quite likely you're reading this over a Wide Area Network (WAN) connection-- your dial-up connection to the Internet! What you've done is run a serial cable all the way across town, over streets, under bridges, to your Internet Service Provider (ISP), right?
+		</p>
+		<p>
+			No?
+		</p>
+		<p>
+			Oh, I see. You have a serial cable that connects to a modem, that connects (through the phone system) to your ISP's modem, that connects (serially) to a device that allows PPP Internet connections.
+		</p>
+		<img src="assets/img/you2isp.gif">
+		<p>
+			Follow the transition: Serial Cable, [Modem], Phone System, [Modem], Serial Cable. <strong>From this perspective, a modem is nothing more than a serial cable extender, that allows you to run a serial cable through the phone network.</strong> And that's all it is-- a serial cable extender. From a layer 1/layer 2 perspective, the sole function of a modem is to allow you to extend your serial connection through a phone system. <strong>Most WAN links are simply some method of serially connecting two routers through the public telephone network.</strong> The only real differences are in speed and flexibility.
+		</p>
+		<p>Ok, let's cover some terminology:</p>
+		<p>
+			<strong>Point-To-Multipoint Networking</strong>
+			<br>
+			Networking where one device may be physically connected to multiple devices, such as when using Ethernet or Token-Ring. A layer two address (typically, a MAC address) is required to indicate to the network which device you're talking to. Typically used for LAN connectivity.
+		</p>
+		<p>
+			<strong>Point-To-Point Networking</strong>
+			<br>
+			Networking where one device is physically connected to one device, such as when using a serial cable (or extended serial cable) and the PPP protocol. There is no concept of MAC address in this case (which can present some difficulties when routing IPX over WAN links, but that's outside the scope of this document.) Typically used for WAN connections.
+		</p>
+		<p>
+			<strong>PPP</strong>
+			<br>
+			The Point to Point Protocol. Provides a standard way of running multiple protocols simultaneously over a WAN link.
+		</p>
+		<p>
+			<strong>SLIP</strong>
+			<br>
+			The Serial Line Internet Protocol. Provides a way of running IP over a dial-up WAN link. As far as I know, no one still uses it; SLIP has been replaced by the more flexible PPP.
+		</p>
+		<p>
+			<strong>Modem</strong>
+			<br>
+			Provides a means of extending a [digital] serial link over an [analog] voice network.
+		</p>
+		<p>
+			<strong>ISDN</strong>
+			<br>
+			Integrated Services Digital Network. Originally designed to replace the Plain Old Telephone System (POTS), high price and restricted availability have restricted it's adoption primarily to medium-speed WAN connections. More on ISDN in a bit.
+		</p>
+		<p>
+			<strong>ISDN</strong>
+			<br>
+			Integrated Services Digital Network. Originally designed to replace the Plain Old Telephone System (POTS), high price and restricted availability have restricted it's adoption primarily to medium-speed WAN connections. More on ISDN in a bit.
+		</p>
+		<p>
+			<strong>Frame Relay</strong>
+			<br>
+			A point-to-point, point-to-multipoint hybrid that allows multiple "virtual" connections, or circuits, to exist on a single physical connection. A frame-relay "cloud" in the center, managed by the intermediary telco(s), manages the frame-relay network so you don't have to. Or, that's the way it's supposed to work, anyway. :-)
+		</p>
+		<p>
+			<strong>Frame Relay PVC</strong>
+			<br>
+			A <strong>P</strong>ermanent <strong>V</strong>irtual point-to-point <strong>C</strong>ircuit through the frame-relay cloud.
+		</p>
+		<p>
+			<strong>POP</strong>
+			<br>
+			Point of Presence. Typically used to describe the a location from which a service is provided. For example, a ISP modem bank can be referred to as a modem POP, or a frame-relay switch can be referred to as a frame-relay POP.
+		</p>
+		<p>
+			<strong>56k</strong>
+			<br>
+			A digital WAN circuit leased from the phone company. Allows communication at 56kbps bidirectionally. Can be connected directly to another office location, or to the nearest frame-relay POP. Requires a 56k CSU/DSU to be useful as a digital WAN link.
+		</p>
+		<p>
+			<strong>T1</strong>
+			<br>
+			A digital WAN circuit leased from the phone company. Originally designed to reduce the need for copper under streets (they were running out of room,) a T1 is configured into 24 digital channels, each of which can carry one digitally encoded voice conversation. For use as a serial cable extender (WAN link), a T1 CSU/DSU is required.
+		</p>
+		<p>
+			<strong>CSU/DSU</strong>
+			<br>
+			Converts the digital signaling of a serial cable into the digital signaling of the telco network; functionally, the same role as a modem. See "T1 Connections", later in this section, for more information.
+		</p>
+		<p>
+			<strong>DSL</strong>
+			<br>
+			Digital Subscriber Lines have generally replaced T1 lines, as they're cheaper to implement and can be much faster.
+		</p>
+		<br>
+		<h4>ISDN</h4>
+		<p>
+			ISDN, or Integrated Services Digital Network, was the digital technology that was supposed to replace analog telephones. However, lackluster (and 'lackluster' is being generous) support from US phone companies have hobbled ISDN's chances of ever replacing the current analog networks. Phone conversations are typcally analog between you and the local phone switch; digital from switch to switch; then analog from the destination switch to the other person you're talking to. This analog-digital-analog conversion makes the engineers of modem manufacturers lose sleep. Since ISDN is end-to-end digital, it is well suited to carrying data as well as voice. The basic consumer ISDN connection is a Basic Rate Interface, or BRI, circuit. A BRI is physically installed as a single pair of copper wire, but has three logical "channels" (think TV channels.) These channels are referred to as "B" or "D" channels. BRI "D" channels are 16kbps and are used by IDSN equipment for talking to the telco switch ("You have and incoming call" or "I want to call this number"). ISDN "B" channels are 64kbps and a BRI circuit contains two of them. For this reason, people often refer to BRI as "2B+D". Each "B" channel is considered to be a seperate phone line by the phone company, which becomes important if you want to use both of them simultaneously for dial-up connectivity, or when the per-minute bill arrives from the phone company.
+		</p>
+		<p>
+			That connection from a single pair of copper is known in ISDN circles as a "U" interface, and the phone company expects you to attach an "NT1" to it. An NT1 then provides two-pair "ST" interfaces to the various ISDN devices around your house. In practical use, most people don't use ISDN for voice. Hardware manufactures have picked up on that fact and will usually build the NT1 right into the device-- the device, then, is said to have a "built-in NT1" or have a "U Interface". Devices that expect an external NT1 are usually described as having an "ST" interface and are less expensive than their NT1 Interface counterparts. In most cases, when using ISDN for networking purposes, you will want to purchase a device with a built-in NT1.
+		</p>
+		<p>
+			<em>Submitted by Tony F.:</em>
+			<br>
+			In Europe connection to the ISDN network is via the 'S' interface. The difference being (in no technical terms) is that the conversion from the signals on the coppper...to digital format is done by the service provider. In the US the ISDN device that you buy does this bit as well. ie the customer pays [for and owns] the conversion [hardware].
+		</p>
+		<h4>Multilink PPP and BACP</h4>
+		<p>
+			Although ISDN is split into two channels, dialing two seperate [regular] PPP connections to an ISP is not desirable; you would have two different IP addresses, and the best throughput possible in either direction is 64kbps (sending data on one channel while receiving data on the other.) Since most "near side of the 'net" connections are primarily receiving data, having the ability to mostly receive data is important. Enter Multilink PPP (MLPPP). Simply put, Multilink PPP allows a single logical PPP connection to span multiple physical connections. A newer protocol, the Bandwidth Allocation Control Protocol (BACP), allows channels to be added and dropped dynamically, typically in response to higher utilization. Typically, MLPPP asks for two phone numbers to dial, but the two phone numbers are usually identical. BACP will usually ask for the minimum and maximum number of channels to connect. The minimum is generally 0 for outbound-only Internet connections, and 1 for "listening" connections such as mail or Web servers; the maximum number of channels is almost always 2.
+		</p>
+		<span style="font-size: 0.9em;"><em>See Dan Kegel's ISDN Page for much more ISDN information. <a href="http://www.alumni.caltech.edu/~dank/isdn/">http://www.alumni.caltech.edu/~dank/isdn/</a></em><span>
+		<h4>56k Connections, Analog</h4>
+		<p>
+			Ahh, the wonderful, ubiquitous 56k dialup connection. It's often all that's required for a small LAN to send and receive e-mail and do some light Web browsing. Many ISPs only offer one POP e-mail account for a dialup connection, but there are other services you can use to add POP accounts for free: Hotmail and Yahoo come to mind. Because you generally get one (varying) IP address, some means of "hiding", or proxying, several "fake" IP addresses behind your single "real" IP address. See the section on NAT for more information. Personally, I use <a href="http://www.winroute.com/">WinRoute</a> for this purpose. One of these days, when I have the spare time (yeah-- right), I intend to get my Linux machine doing this via IP Masquerading. However, my current configuration is working quite well, and fixing what's not broken tends to rank fairly low on the priority list.
+		</p>
+		<h4>56k Connections, Digital</h4>
+		<p>
+			A 56k digital connection is specially ordered from the phone company. Unlike regular phone lines, digital lines understand the digital communication traversing them; the signals are repeated, rather than amplified (which will amplify noise along with the signal.) So, the noise is removed, and the signal is regenerated. Remember, analog signals are <em>amplified</em>, increasing noise along with signal, and digital signals are repeated, removing the noise and pushing clean, new data down the wire. So, true digital lines have almost no difficulty with signal degradation or data corruption, compared to analog communication. In Europe, the equivalent to a 56k line is a 64k digital line.
+		</p>
+		<h4>T1 Connections</h4>
+		<p>
+			T1 lines were developed because the under-street tunnels in cities were getting clogged with copper wires carrying single conversations. T1 lines digitallencoded 24 voice channels were digitally encoded using time-division multiplexing, and sent over two pair of copper, thereby increasing the ability of copper to carry voice communications by a factor of 12. When two voice telephone switches are connected by a T1 line, the voice communications encoded must be alternately encoded into channels, then decoded from T1 channels back into discrete voice connections. The device that does this is called a CSU, or Channel Service Unit. Data communications specialists quickly found T1 lines to be perfect carriers of data, as well. Since all data must be converted to digital "channels" before being placed on the T1, a device called a Data Service Unit was designed to take a serial cable, and split its data into channels usable by a CSU. So, a router is typically connected to a CSU/DSU, which encodes the data and transmits it over the T1 line. More recently, the CSU/DSU is actually built in to the router. Still, a T1 line, from our standpoint, is just a serial cable extender.
+		</p>
+		<h4>Frame-Relay</h4>
+		<p>
+			In a nutshell, a way of creating virtual data links through a shared-bandwidth "cloud" of routers. Think of hard-wired VPN connections through a private data network, without the encryption.
+		</p>
+		<h4>Routing Over WAN Links</h4>
+		<p>
+			Most of this document has covered networking methods that connect one computer directly to many computers, such as Ethernet or Token Ring. WAN links are, however, point-to-point, so they are treated a bit differently. Remember, each hop between communicating devices has the sole responsiblity of getting each packet to the next hop that is closer to the packet's destination. Routing tables on Ethernet-connected machines typically include the IP address of the next router, since simply specifying "the Ethernet interface" is not nearly specific enough. However, when routing over point-to-point links, next-hop specifications often are, simply, "send packets for these destinations over the Serial0 interface." We don't need to specify IP addresses for point-to-point connections (though many admins do), since the routing function can be completed simply by placing the packet on the wire that will bring it to the next hop toward its destination. If this seems confusing, remember: neither the source nor the destination IP address will change on the packet at any point between sending and receiving, though the layer 2 information will be repeatedly stripped off and replaced, as needed, by the intermediate routers. (Network Address Translation is, of course, an exception to this rule, since NAT alters both the IP and the (TCP or UDP) headers of all packets traversing a NAT router.)
+		</p>
 	</div>
 	<script src="assets/bootstrap-5.3.6-dist/js/bootstrap.min.js"></script>
 </body>
